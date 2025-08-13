@@ -1,100 +1,116 @@
-# Tropical Soda Apple (TSA) Detection Using UAVs and AI
+# Tropical Soda Apple (TSA) Drone AI Detection
 
 ## Overview
-This repository contains the complete workflow for detecting **Tropical Soda Apple (TSA)** infestations in rugged grazing country of northern New South Wales, Australia, using **UAV-acquired RGB, multispectral (MS), and hyperspectral (HS) imagery** combined with **machine learning (ML) and deep learning (DL)** models.
+This repository contains the complete code, documentation, datasets, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired RGB, multispectral (MS), and hyperspectral (HS) imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
 
-The project integrates:
-- High-resolution UAV imagery from multiple sensors.
-- Orthomosaic generation and advanced preprocessing.
-- Manual ground-truth labelling by weed specialists.
-- ML/DL model training and evaluation (SVM, RF, XGBoost, U-Net).
-- Prediction maps for operational weed management.
+The project was developed as part of field campaigns across Northern New South Wales (2023–2025) and includes:
+- **High-resolution UAV imagery** from multiple sensors.
+- **Manual ground-truth labelling** using QGIS and ArcGIS Pro.
+- **Preprocessing workflows** for orthomosaics, ROIs, and annotations.
+- **ML/DL training scripts** for RGB, MS, and HS imagery.
+- **Model performance evaluations** with precision, recall, and F1-scores.
+- **Setup instructions** for Colab, local GPU machines, and HPC environments.
 
-## Project Goals
-1. Develop a generalizable AI pipeline for TSA detection across multiple seasons and sensors.
-2. Compare classical ML and DL approaches for weed detection.
-3. Recommend optimal UAV and sensor configurations for large-scale monitoring.
-4. Enable reproducibility by sharing code, trained models, and documentation.
-
-## Workflow Summary
-1. **Data Collection**
-   - UAV platforms: DJI Matrice 300, M600, Mavic 3 Multispectral.
-   - Sensors: Fuji RGB, DJI P1, PhaseOne, M3E RGB, Micasense Altum, RedEdge-P, Specim AFX VNIR.
-   - Sites: 11 locations across 4 seasonal campaigns (2023–2025).
-
-2. **Preprocessing**
-   - Orthomosaic generation (Agisoft Metashape, Pix4D, DJI Terra).
-   - Radiometric and atmospheric correction.
-   - Image alignment & ROI extraction.
-   - Manual TSA labelling in QGIS.
-
-3. **Model Training**
-   - ML: SVM, Random Forest, XGBoost, KNN.
-   - DL: U-Net, FCN (TensorFlow/Keras).
-   - Performance metrics: Precision, Recall, F1-score.
-
-4. **Prediction & Validation**
-   - Full-site TSA prediction maps.
-   - Visual validation with expert field observations.
-   - Performance analysis across sensors.
+---
 
 ## Repository Structure
 ```
-TSA-Drone-Detection/
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── setup_instructions.md
-├── data/
-│   ├── README.md
-│   ├── sample_data/
-│   └── metadata/
-├── notebooks/
-│   ├── 01_data_preprocessing.ipynb
-│   ├── 02_model_training.ipynb
-│   ├── 03_model_evaluation.ipynb
-│   └── 04_prediction_visualisation.ipynb
-├── src/
-│   ├── preprocessing/
-│   ├── training/
-│   ├── evaluation/
-│   └── prediction/
-├── models/
-│   ├── trained_weights/
-│   └── README.md
-└── docs/
-    ├── methodology.md
-    ├── results.md
-    └── figures/
+TSA-DRONE-AI-DETECTION/
+│   README.md
+│   tree_output.txt
+│
+├── docs/
+│   ├── methodology.md        # Detailed methodology from technical report
+│   ├── README.md              # Docs overview
+│   ├── results.md             # Performance results, tables, and figures
+│
+├── ground_truth_labelling/
+│   └── README.md              # Ground truth data preparation process
+│
+├── image_annotation/
+│   ├── Activity 2.1 - Labelling Techniques.md
+│   ├── Activity 2.2 - Annotation_Guidelines.md
+│   ├── Activity 2.3 - Ground_Truth_Data_and_Region_of_Interest.md
+│   ├── Activity 2.4 - Using_QGIS_for_Annotation.md
+│   ├── Activity 2.5 - Using_ArcGIS_Pro_for_Annotation.md
+│   └── Activity 2.6 - Geo-SAM_QGIS_Plugin_Installation_Guide.md
+│
+├── machine_learning_scripts/
+│   ├── hs/                    # Hyperspectral model scripts
+│   ├── ms/                    # Multispectral model scripts
+│   ├── rgb/                   # RGB model scripts
+│   └── other/                 # Utility scripts for raster/vector operations
+│
+├── model_performance/         # Model results, metrics, plots
+│
+├── sample_data/
+│   └── README.md              # Example dataset for quick tests
+│
+└── setup_instructions/
+    ├── Activity 3.1.1 - Google Colab Setup.md
+    ├── Activity 3.1.2 - Local_Machine_Setup.md
+    ├── Activity 3.1.3 - QUT_HPC_Setup.md
+    ├── environment_windows_gpu.yml
+    ├── requirements.txt
+    └── TensorFlow GPU.md
 ```
 
-## Setup
-1. Clone this repository
-```bash
-git clone https://github.com/yourusername/TSA-Drone-Detection.git
-cd TSA-Drone-Detection
-```
-2. Create environment
-```bash
-conda create -n tsa-detection python=3.10
-conda activate tsa-detection
-pip install -r requirements.txt
-```
-3. Install GDAL system packages if needed.
-
-## Data Access
-Data is hosted externally due to size. Download orthomosaics, ROI tiles, and labels from the provided cloud link and place them under `data/`.
+---
 
 ## Quick Start
-Run notebooks in sequence to preprocess, train, evaluate, and predict.
 
-## Results Summary
-Best performance:
-- Sensor: Fuji RGB / DJI P1 / PhaseOne
-- Model: U-Net (Precision > 0.90, F1-score > 0.90)
+### 1. Environment Setup
+Follow the relevant guide from `setup_instructions/`:
+- **Google Colab:** `Activity 3.1.1 - Google Colab Setup.md`
+- **Local GPU:** `Activity 3.1.2 - Local_Machine_Setup.md`
+- **QUT HPC:** `Activity 3.1.3 - QUT_HPC_Setup.md`
+
+Or use Conda:
+```bash
+conda env create -f setup_instructions/environment_windows_gpu.yml
+conda activate tsa-detection
+```
+
+---
+
+### 2. Data Preparation
+1. Download UAV imagery and ground truth data from the cloud link provided in `sample_data/README.md`.
+2. Place raw orthomosaics and labels in the appropriate folders.
+3. Follow the steps in `ground_truth_labelling/README.md` and `image_annotation/` guides.
+
+---
+
+### 3. Running Models
+Training and inference scripts are under `machine_learning_scripts/`:
+
+- **RGB:**
+```bash
+python machine_learning_scripts/rgb/tsa_unet_train_rgb_v1.py
+python machine_learning_scripts/rgb/tsa_unet_predict_rgb_v1.py
+```
+
+- **Multispectral (MS):**
+```bash
+python machine_learning_scripts/ms/tsa_unet_train_ms_v1.py
+python machine_learning_scripts/ms/tsa_unet_predict_ms_v1.py
+```
+
+- **Hyperspectral (HS):**
+```bash
+# Add HS training/inference commands here
+```
+
+---
+
+## Results
+Detailed performance metrics and evaluation results are available in `docs/results.md`.
+
+---
 
 ## License
 MIT License
+
+---
 
 ## Citation
 Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
