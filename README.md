@@ -43,7 +43,7 @@ TSA-DRONE-AI-DETECTION/
 ├── Dataset Links/
 │   └── README.md              # Example dataset for quick tests
 │
-└── setup_instructions/
+└── Setup_instructions/
     ├── Google Colab Setup.md
     ├── Local_Machine_Setup.md
     ├── Cloud_based_HPC_Setup.md
