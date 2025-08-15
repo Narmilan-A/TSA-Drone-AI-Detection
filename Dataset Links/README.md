@@ -11,8 +11,6 @@ The dataset is hosted on the MS Teams shared drive:
 ## Folder Structure
 
 ```
-## Folder Structure
-
 TSA-Drone-AI-Detection/
 ├── seasons_for_labelling/
 │   ├── oct-24/
