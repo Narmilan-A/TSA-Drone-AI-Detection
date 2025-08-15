@@ -40,7 +40,7 @@ TSA-DRONE-AI-DETECTION/
 │
 ├── model_performance/         # Model results, metrics, plots
 │
-├── sample_data/
+├── Dataset Links/
 │   └── README.md              # Example dataset for quick tests
 │
 └── setup_instructions/
