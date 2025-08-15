@@ -1,17 +1,21 @@
 # Tropical Soda Apple (TSA) Drone AI Detection
 
+## Project Full Title  
+**Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW**
+
 ## Overview
-This repository contains the complete code, documentation, datasets, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired RGB, multispectral (MS), and hyperspectral (HS) imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
+This repository contains the complete code, documentation, dataset links, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired **RGB**, **multispectral (MS)**, and **hyperspectral (HS)** imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
 
 The project was developed as part of field campaigns across Northern New South Wales (2023–2025) and includes:
-- **High-resolution UAV imagery** from multiple sensors.
-- **Manual ground-truth labelling** using QGIS and ArcGIS Pro.
-- **Preprocessing workflows** for orthomosaics, ROIs, and annotations.
-- **ML/DL training scripts** for RGB, MS, and HS imagery.
-- **Model performance evaluations** with precision, recall, and F1-scores.
-- **Setup instructions** for Colab, local GPU machines, and HPC environments.
 
----
+- **High-resolution drone imagery** from multiple sensors  
+- **Manual ground-truth labelling** using QGIS
+- **Preprocessing workflows** for orthomosaics, region of interests (ROIs), and annotations  
+- **ML/DL training scripts** for RGB, MS, and HS imagery  
+- **Model performance evaluations** with precision, recall, and F1-scores  
+- **Setup instructions** for Colab, local GPU machines, and HPC environments
+
+<img width="1757" height="476" alt="image" src="https://github.com/user-attachments/assets/07aae30d-5239-423d-9972-53792d432c0d" />
 
 ## Repository Structure
 ```
@@ -24,16 +28,9 @@ TSA-DRONE-AI-DETECTION/
 │   ├── README.md              # Docs overview
 │   ├── results.md             # Performance results, tables, and figures
 │
-├── ground_truth_labelling/
-│   └── README.md              # Ground truth data preparation process
-│
 ├── image_annotation/
-│   ├── Activity 2.1 - Labelling Techniques.md
-│   ├── Activity 2.2 - Annotation_Guidelines.md
-│   ├── Activity 2.3 - Ground_Truth_Data_and_Region_of_Interest.md
-│   ├── Activity 2.4 - Using_QGIS_for_Annotation.md
-│   ├── Activity 2.5 - Using_ArcGIS_Pro_for_Annotation.md
-│   └── Activity 2.6 - Geo-SAM_QGIS_Plugin_Installation_Guide.md
+│   ├── README.md              # Ground truth data preparation process
+│   ├── Using_QGIS_for_Annotation.md
 │
 ├── machine_learning_scripts/
 │   ├── hs/                    # Hyperspectral model scripts
@@ -43,13 +40,13 @@ TSA-DRONE-AI-DETECTION/
 │
 ├── model_performance/         # Model results, metrics, plots
 │
-├── sample_data/
+├── Dataset Links/
 │   └── README.md              # Example dataset for quick tests
 │
 └── setup_instructions/
-    ├── Activity 3.1.1 - Google Colab Setup.md
-    ├── Activity 3.1.2 - Local_Machine_Setup.md
-    ├── Activity 3.1.3 - QUT_HPC_Setup.md
+    ├── Google Colab Setup.md
+    ├── Local_Machine_Setup.md
+    ├── HPC_Setup.md
     ├── environment_windows_gpu.yml
     ├── requirements.txt
     └── TensorFlow GPU.md
@@ -61,9 +58,9 @@ TSA-DRONE-AI-DETECTION/
 
 ### 1. Environment Setup
 Follow the relevant guide from `setup_instructions/`:
-- **Google Colab:** `Activity 3.1.1 - Google Colab Setup.md`
-- **Local GPU:** `Activity 3.1.2 - Local_Machine_Setup.md`
-- **QUT HPC:** `Activity 3.1.3 - QUT_HPC_Setup.md`
+- **Google Colab:** `Google Colab Setup.md`
+- **Local GPU:** `Local_Machine_Setup.md`
+- **HPC:** `HPC_Setup.md`
 
 Or use Conda:
 ```bash
@@ -104,12 +101,13 @@ python machine_learning_scripts/ms/tsa_unet_predict_ms_v1.py
 
 ## Results
 Detailed performance metrics and evaluation results are available in `docs/results.md`.
+<img width="1932" height="820" alt="image" src="https://github.com/user-attachments/assets/838b75a2-7570-4d0c-9df8-ae661abcaccf" />
+
 
 ---
 
 ## License
-MIT License
-
+....
 ---
 
 ## Citation
