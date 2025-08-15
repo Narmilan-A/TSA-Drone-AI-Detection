@@ -139,5 +139,5 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 ---
 
 ## Citation
-If you use this dataset in publications, please cite: Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
+**If you use this dataset in publications, please cite**: Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
 
