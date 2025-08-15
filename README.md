@@ -13,6 +13,10 @@ The project was developed as part of field campaigns across Northern New South W
 
 <img width="564" height="471" alt="image" src="https://github.com/user-attachments/assets/93805d54-3d3d-4ad6-a7c4-9cef46f90f29" /> --> <img width="756" height="616" alt="image" src="https://github.com/user-attachments/assets/21aead30-71a9-452b-9aa9-933098612071" />
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/93805d54-3d3d-4ad6-a7c4-9cef46f90f29" width="45%" />
+  <img src="https://github.com/user-attachments/assets/21aead30-71a9-452b-9aa9-933098612071" width="45%" />
+</p>
 
 
 ---
