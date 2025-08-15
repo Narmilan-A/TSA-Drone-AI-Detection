@@ -10,6 +10,9 @@ The dataset is hosted on the MS Teams shared drive:
 
 ## Folder Structure
 
+```
+## Folder Structure
+
 TSA-Drone-AI-Detection/
 ├── seasons_for_labelling/
 │   ├── oct-24/
@@ -73,6 +76,7 @@ TSA-Drone-AI-Detection/
         │   └── unet_altum_model&outcomes
         └── rededge-p/
             └── xgb_rededge-p_model&outcomes_1
+```
 
 ---
 
