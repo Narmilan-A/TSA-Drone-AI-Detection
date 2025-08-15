@@ -111,3 +111,15 @@ Detailed performance metrics and evaluation results are available in `docs/resul
 
 ## Citation
 Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
+
+## Citation
+
+If you use this dataset or related work in your research, please cite:
+
+```bibtex
+@misc{tsa_drone_ai_detection,
+  title={Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW},
+  author={Amarasingam, N., & Dehaan, R and collaborators},
+  year={2025},
+  url={https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy}
+}
