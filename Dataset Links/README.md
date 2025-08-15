@@ -136,10 +136,9 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 
 ## Citation
 ```
-@data{tsa_drone_dataset_2025,
-  doi = {10.21227/tsa-drone-ai-2025},
+@data{TSA-Drone-AI-Detection_2025,
   url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
-  author = {Narmilan Amarasingam and collaborators},
+  author = {Narmilan Amarasingam, Remy Dehaan and collaborators},
   publisher = {Charles Sturt University / MS Teams Shared Drive},
   title = {Tropical Soda Apple (TSA) Drone AI Detection Dataset},
   year = {2025}
