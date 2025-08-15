@@ -135,5 +135,15 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 ---
 
 ## Citation
-**If you use this dataset in publications, please cite**: Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
+```
+@data{tsa_drone_dataset_2025,
+  doi = {10.21227/tsa-drone-ai-2025},
+  url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
+  author = {Narmilan Amarasingam and collaborators},
+  publisher = {Charles Sturt University / MS Teams Shared Drive},
+  title = {Tropical Soda Apple (TSA) Drone AI Detection Dataset},
+  year = {2025}
+}
+```
+
 
