@@ -64,31 +64,9 @@ Follow the relevant guide from `setup_instructions/`:
 ---
 
 ### 2. Data Preparation
-1. Download UAV imagery and ground truth data from the cloud link provided in `sample_data/README.md`.
-2. Place raw orthomosaics and labels in the appropriate folders.
-3. Follow the steps in `ground_truth_labelling/README.md` and `image_annotation/` guides.
-
----
-
-### 3. Running Models
-Training and inference scripts are under `machine_learning_scripts/`:
-
-- **RGB:**
-```bash
-python machine_learning_scripts/rgb/tsa_unet_train_rgb_v1.py
-python machine_learning_scripts/rgb/tsa_unet_predict_rgb_v1.py
-```
-
-- **Multispectral (MS):**
-```bash
-python machine_learning_scripts/ms/tsa_unet_train_ms_v1.py
-python machine_learning_scripts/ms/tsa_unet_predict_ms_v1.py
-```
-
-- **Hyperspectral (HS):**
-```bash
-# Add HS training/inference commands here
-```
+1. Download drone imagery and ground truth data from the cloud link.
+2. Place orthomosaics and labels in the appropriate folders.
+3. Use ML scripts to train, validate and test for TSA detection.
 
 ---
 
