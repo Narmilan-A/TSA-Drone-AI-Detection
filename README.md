@@ -1,22 +1,21 @@
 # Tropical Soda Apple (TSA) Drone AI Detection
 
-## Project Full Title: **Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW**
+## Project Full Title  
+**Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW**
 
 ## Overview
-This repository contains the complete code, documentation, datasets, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired RGB, multispectral (MS), and hyperspectral (HS) imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
+This repository contains the complete code, documentation, datasets, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired **RGB**, **multispectral (MS)**, and **hyperspectral (HS)** imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
 
 The project was developed as part of field campaigns across Northern New South Wales (2023–2025) and includes:
-- **High-resolution UAV imagery** from multiple sensors.
-- **Manual ground-truth labelling** using QGIS and ArcGIS Pro.
-- **Preprocessing workflows** for orthomosaics, ROIs, and annotations.
-- **ML/DL training scripts** for RGB, MS, and HS imagery.
-- **Model performance evaluations** with precision, recall, and F1-scores.
-- **Setup instructions** for Colab, local GPU machines, and HPC environments.
+
+- **High-resolution UAV imagery** from multiple sensors  
+- **Manual ground-truth labelling** using QGIS and ArcGIS Pro  
+- **Preprocessing workflows** for orthomosaics, ROIs, and annotations  
+- **ML/DL training scripts** for RGB, MS, and HS imagery  
+- **Model performance evaluations** with precision, recall, and F1-scores  
+- **Setup instructions** for Colab, local GPU machines, and HPC environments
 
 <img width="1757" height="476" alt="image" src="https://github.com/user-attachments/assets/07aae30d-5239-423d-9972-53792d432c0d" />
-
-
-
 ---
 
 ## Repository Structure
