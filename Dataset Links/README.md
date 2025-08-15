@@ -136,7 +136,7 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 
 ## Citation
 ```
-@data{TSA-Drone-AI-Detection_2025,
+@data{TSA-Drone-AI-Detection,
   url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
   author = {Amarasingam, N., & Dehaan, R and collaborators},
   publisher = {Charles Sturt University / MS Teams Shared Drive},
