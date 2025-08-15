@@ -32,12 +32,10 @@ TSA-DRONE-AI-DETECTION/
 │   └── README.md              # Ground truth data preparation process
 │
 ├── image_annotation/
-│   ├── Activity 2.1 - Labelling Techniques.md
-│   ├── Activity 2.2 - Annotation_Guidelines.md
-│   ├── Activity 2.3 - Ground_Truth_Data_and_Region_of_Interest.md
-│   ├── Activity 2.4 - Using_QGIS_for_Annotation.md
-│   ├── Activity 2.5 - Using_ArcGIS_Pro_for_Annotation.md
-│   └── Activity 2.6 - Geo-SAM_QGIS_Plugin_Installation_Guide.md
+│   ├── Labelling Techniques.md
+│   ├── Annotation_Guidelines.md
+│   ├── Ground_Truth_Data_and_Region_of_Interest.md
+│   ├── Using_QGIS_for_Annotation.md
 │
 ├── machine_learning_scripts/
 │   ├── hs/                    # Hyperspectral model scripts
@@ -51,9 +49,9 @@ TSA-DRONE-AI-DETECTION/
 │   └── README.md              # Example dataset for quick tests
 │
 └── setup_instructions/
-    ├── Activity 3.1.1 - Google Colab Setup.md
-    ├── Activity 3.1.2 - Local_Machine_Setup.md
-    ├── Activity 3.1.3 - QUT_HPC_Setup.md
+    ├── Google Colab Setup.md
+    ├── Local_Machine_Setup.md
+    ├── HPC_Setup.md
     ├── environment_windows_gpu.yml
     ├── requirements.txt
     └── TensorFlow GPU.md
@@ -65,9 +63,9 @@ TSA-DRONE-AI-DETECTION/
 
 ### 1. Environment Setup
 Follow the relevant guide from `setup_instructions/`:
-- **Google Colab:** `Activity 3.1.1 - Google Colab Setup.md`
-- **Local GPU:** `Activity 3.1.2 - Local_Machine_Setup.md`
-- **QUT HPC:** `Activity 3.1.3 - QUT_HPC_Setup.md`
+- **Google Colab:** `Google Colab Setup.md`
+- **Local GPU:** `Local_Machine_Setup.md`
+- **HPC:** `HPC_Setup.md`
 
 Or use Conda:
 ```bash
