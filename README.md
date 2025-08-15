@@ -48,8 +48,7 @@ TSA-DRONE-AI-DETECTION/
     ├── Local_Machine_Setup.md
     ├── HPC_Setup.md
     ├── environment_windows_gpu.yml
-    ├── requirements.txt
-    └── TensorFlow GPU.md
+    └── TensorFlow-GPU_Installation.md
 ```
 
 ---
