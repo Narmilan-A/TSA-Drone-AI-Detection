@@ -29,7 +29,7 @@ The dataset is hosted on the MS Teams shared drive:
 - `m3m-ms` → DJI Mavic 3 Multispectral
 
 ### HS Sensors
-- `afx` → AFX hyperspectral sensor  
+- `afx` → Specim AFX hyperspectral  
 
 ### Tiles vs Original
 - `_tile` → cropped ROI tiles for model training/testing  
