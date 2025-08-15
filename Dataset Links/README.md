@@ -47,22 +47,18 @@ TSA-Drone-AI-Detection/
 │   │   ├── Site3
 │   │   └── Site4
 │   ├── apr-23/
-│   │   ├── Site1/hs
+│   │   ├── Site1
 │   │   └── Site2
 │   ├── jan-25/
-│   │   ├── Site1/hs
+│   │   ├── Site1
 │   │   ├── Site2
-│   │   ├── Site3/hs
+│   │   ├── Site3
 │   │   └── Site4
 │   └── nov-23/Site1
 ├── sensors_for_modelling/
 │   ├── rgb/
 │   │   ├── sony/
-│   │   │   ├── mask_rois/
-│   │   │   └── rgb_rois/
 │   │   ├── fuji/
-│   │   │   ├── mask_rois/
-│   │   │   └── rgb_rois/
 │   │   ├── p1/
 │   │   ├── phase1/
 │   │   ├── m3e/
@@ -89,19 +85,19 @@ TSA-Drone-AI-Detection/
 │   └── other/get_info/
 └── sensors_model_performance/
     ├── rgb/
-    │   ├── sony/unet_prediction_rois
-    │   ├── p1/unet_prediction_rois
-    │   ├── phase1/unet_prediction_rois
-    │   ├── m3e/unet_prediction_rois
-    │   ├── m3m-rgb/unet_prediction_rois
-    │   └── fuji/unet_prediction_rois
+    │   ├── sony
+    │   ├── p1
+    │   ├── phase1
+    │   ├── m3e
+    │   ├── m3m-rgb
+    │   └── fuji
     └── ms/
         ├── m3m-ms/
         ├── altum/
-        │   ├── xgb_altum_model&outcomes_1
+        │   ├── xgb_altum_model&outcomes
         │   └── unet_altum_model&outcomes
         └── rededge-p/
-            └── xgb_rededge-p_model&outcomes_1
+            └── xgb_rededge-p_model&outcomes
 ```
 
 ---
@@ -109,10 +105,10 @@ TSA-Drone-AI-Detection/
 ## Dataset Description
 
 ### 1. seasons_for_labelling
-Contains UAV imagery organized by **season and site** for manual annotation. Some sites include **hyperspectral (hs)** folders.
+Contains drone imagery organised by **season and site** for manual annotation.
 
 ### 2. sensors_for_modelling
-Contains **RGB, MS, and HS data** processed into regions of interest (ROIs) for model training and testing.  
+Contains **RGB, MS, and HS data** processed into regions of interest for model training and testing.  
 
 - **RGB sensors:** sony, fuji, p1, phase1, m3e, m3m-rgb  
 - **MS sensors:** rededge-p, m3m-ms, altum  
