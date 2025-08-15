@@ -11,26 +11,8 @@ The project was developed as part of field campaigns across Northern New South W
 - **Model performance evaluations** with precision, recall, and F1-scores.
 - **Setup instructions** for Colab, local GPU machines, and HPC environments.
 
-<table style="border: 0; border-color: white;">
-  <tr>
-    <td align="center" style="border:none;">
-      <img src="https://github.com/user-attachments/assets/93805d54-3d3d-4ad6-a7c4-9cef46f90f29"
-           alt="TSA labeling using Fuji RGB ROI" width="400" height="300" style="border:none;" />
-    </td>
-    <td align="center" valign="middle" style="border:none;">
-      <span style="font-size: 48px; font-weight: bold;">➜</span>
-    </td>
-    <td align="center" style="border:none;">
-      <img src="https://github.com/user-attachments/assets/21aead30-71a9-452b-9aa9-933098612071"
-           alt="U-Net prediction" width="400" height="300" style="border:none;" />
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="border:none;"><em>TSA labeling using Fuji RGB ROI</em></td>
-    <td style="border:none;"></td>
-    <td align="center" style="border:none;"><em>U-Net prediction</em></td>
-  </tr>
-</table>
+<img width="1757" height="476" alt="image" src="https://github.com/user-attachments/assets/07aae30d-5239-423d-9972-53792d432c0d" />
+
 
 
 ---
