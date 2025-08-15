@@ -1,8 +1,8 @@
 # Tropical Soda Apple (TSA) Drone AI Detection
 
 ## Project Full Title
-Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW
----
+**Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW
+**---
 
 ## Overview
 This repository contains the complete code, documentation, datasets, and instructions for detecting **Tropical Soda Apple (TSA)** infestations using UAV-acquired RGB, multispectral (MS), and hyperspectral (HS) imagery combined with **machine learning (ML)** and **deep learning (DL)** models.
