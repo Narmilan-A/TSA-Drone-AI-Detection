@@ -108,6 +108,8 @@ python machine_learning_scripts/ms/tsa_unet_predict_ms_v1.py
 
 ## Results
 Detailed performance metrics and evaluation results are available in `docs/results.md`.
+<img width="1932" height="820" alt="image" src="https://github.com/user-attachments/assets/838b75a2-7570-4d0c-9df8-ae661abcaccf" />
+
 
 ---
 
