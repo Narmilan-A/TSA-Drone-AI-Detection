@@ -61,8 +61,6 @@ Follow the relevant guide from `setup_instructions/`:
 - **Local GPU:** `Local_Machine_Setup.md`
 - **HPC:** `HPC_Setup.md`
 
-```
-
 ---
 
 ### 2. Data Preparation
