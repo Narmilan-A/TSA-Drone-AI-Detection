@@ -122,7 +122,7 @@ Contains **RGB, MS, and HS data** processed into regions of interest for model t
 Contains preprocessing and analysis scripts for **RGB, MS, HS**, and utility scripts for dataset info extraction.
 
 ### 4. sensors_model_performance
-Contains model predictions and evaluation outputs for **RGB and MS sensors**, organized per sensor.
+Contains model predictions and evaluation outputs for **RGB and MS sensors**, organised per sensor.
 
 ---
 
