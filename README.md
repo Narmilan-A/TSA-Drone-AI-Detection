@@ -46,9 +46,9 @@ TSA-DRONE-AI-DETECTION/
 └── setup_instructions/
     ├── Google Colab Setup.md
     ├── Local_Machine_Setup.md
-    ├── HPC_Setup.md
-    ├── environment_windows_gpu.yml
-    └── TensorFlow-GPU_Installation.md
+    ├── Cloud_based_HPC_Setup.md
+    ├── TensorFlow-GPU_Installation.yml
+    └── README.md
 ```
 
 ---
