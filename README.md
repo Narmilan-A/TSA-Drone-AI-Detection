@@ -114,8 +114,7 @@ Detailed performance metrics and evaluation results are available in `docs/resul
 ---
 
 ## License
-MIT License
-
+....
 ---
 
 ## Citation
