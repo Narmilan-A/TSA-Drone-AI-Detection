@@ -138,11 +138,10 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 ```
 @data{TSA-Drone-AI-Detection_2025,
   url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
-  author = {Narmilan Amarasingam, Remy Dehaan and collaborators},
+  author = {Amarasingam, N., & Dehaan, R and collaborators},
   publisher = {Charles Sturt University / MS Teams Shared Drive},
-  title = {Tropical Soda Apple (TSA) Drone AI Detection Dataset},
+  title = {Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW},
   year = {2025}
 }
 ```
-
 
