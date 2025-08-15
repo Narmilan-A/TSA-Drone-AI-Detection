@@ -25,18 +25,15 @@ from keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.metrics import BinaryAccuracy, Precision, Recall, IoU, MeanIoU, FalseNegatives, FalsePositives
 from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, Dropout, BatchNormalization
+from keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, Dropout, BatchNormalization, UpSampling2D
 from keras.callbacks import ModelCheckpoint
 #----------------------------------------------------------------------#
 # Set the parameters to control the operations
-apply_veg_indices = True
-apply_gaussian = False
-apply_mean = False
-apply_convolution=False
+apply_veg_indices = False 
 delete_bands = False
 
 # Specify the bands to be deleted
-deleted_bands = [0,1,2,3,4] if delete_bands else None  # Adjust this list based on your scenario
+deleted_bands = [0,1,2] if delete_bands else None  # Adjust this list based on your scenario - Deleting the red band - Index 0 mean: 1st band
 
 # Minimum width and height for filtering
 min_width = 0
@@ -44,97 +41,51 @@ min_height = 0
 max_width = 20000
 max_height = 20000
 
-tile_size = 64
-overlap_percentage = 0.2
+tile_size = 256
+overlap_percentage = 0.6
 test_size=0.30
 
 learning_rate=0.001
-batch_size=32
-epochs=200
+batch_size=16
+epochs=120
 
 n_classes = 2
 target_names = ['bg','tsa']
 #----------------------------------------------------------------------#
-def post_idx_calc(index, normalise):
-    # Replace nan with zero and inf with finite numbers
-    idx = np.nan_to_num(index)
-    if normalise:
-        return cv2.normalize(
-            idx, None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-    else:
-        return idx
+# def post_idx_calc(index, normalise):
+#     # Replace nan with zero and inf with finite numbers
+#     idx = np.nan_to_num(index)
+#     if normalise:
+#         return cv2.normalize(
+#             idx, None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+#     else:
+#         return idx
 
 # Define function to calculate vegetation indices
 def calculate_veg_indices(input_img):
 # Extract the all channels from the input image
-    # For M3M
-    RedEdge = input_img[:, :,2]
-    nir = input_img[:, :, 3]
-    red = input_img[:, :, 1]
-    green = input_img[:, :, 0]
-
-    # RedEdge = input_img[:, :, 3]
-    # nir = input_img[:, :, 4]
-    # red = input_img[:, :, 2]
-    # green = input_img[:, :, 1]
-    # blue = input_img[:, :, 0]
+    red = input_img[:, :, 0]
+    green = input_img[:, :, 1]
+    blue = input_img[:, :, 2]
 
     # Calculate vegetation indices
-    ndvi = (nir - red) / (nir + red)
-    gndvi = (nir - green) / (nir + green)
-    ndre = (nir - RedEdge) / (nir + RedEdge)
-    gci = (nir)/(green) - 1
-    msavi = ((2 * nir) + 1 -(np.sqrt(np.power((2 * nir + 1), 2) - 8*(nir - red))))/2
-    #exg = ((2*green)-red-blue)/(red+green+blue)
-    sri = (nir / red)
-   # arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
-    lci = (nir - RedEdge) / (nir + red)
-   # hrfi = (red - blue) / (green + blue)
-    dvi = (nir - red)
-    rvi = (nir)/(red)
-    tvi = (60*(nir - green)) - (100 * (red - green))
-    gdvi = (nir - green)
+    exg = ((2*green)-red-blue)/(red+green+blue)
+    hrfi = (red - blue) / (green + blue)
     ngrdi = (green - red) / (green + red)
     grvi = (red - green) / (red + green)
-    rgi = (red / green)
-   # endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
-   # evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
-   # sipi= (nir - blue) / (nir - red)
-    osavi= (1.16 * (nir - red)) / (nir + red + 0.16)
-    gosavi=(nir - green) / (nir + green + 0.16)
-    #exr= ((1.4 * red) - green) / (red + green + blue)
-    #exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
-    ndi=(green - red) / (green + red)
-  #  gcc= green / (red + green + blue)
-    reci= (nir) / (RedEdge) - 1
-    ndwi= (green - nir) / (green + nir)
+    exr= ((1.4 * red) - green) / (red + green + blue)
+    exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
 
-    #veg_indices = np.stack((ndvi,ndre,hrfi,gndvi,gci,msavi,exg,sri,arvi,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi, endvi, evi,sipi,osavi,gosavi,exr,exgr,ndi,gcc,reci,ndwi), axis=2)
-    #veg_indices = np.stack((ndvi,ndre,gndvi,gci,msavi,sri,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi,osavi,gosavi,ndi,reci,ndwi), axis=2)
-    #veg_indices = np.stack((dvi,msavi,gdvi,rgi,gndvi), axis=2)
-
-    veg_indices = np.stack((msavi,ngrdi,grvi,osavi,ndi), axis=2)
-
+    veg_indices = np.stack((exg,hrfi), axis=2)
+ 
     return veg_indices
-#----------------------------------------------------------------------#
-# Define a 7x7 low-pass averaging kernel
-kernel_size = 3
-kernel = np.ones((kernel_size, kernel_size)) / (kernel_size**2)
-
-# Define a function to apply Gaussian blur to an image
-def apply_gaussian_blur(img):
-    return cv2.GaussianBlur(img, (3,3), 0)
-
-# Function to apply mean filter in a 3x3 window
-def apply_mean_filter(img):
-    return cv2.blur(img, (3,3))
 #----------------------------------------------------------------------#
 # Define the tile size and overlap percentage
 tile_size = tile_size
 overlap = int(tile_size * overlap_percentage)
 #----------------------------------------------------------------------#
 # Define the root directory with input images and respective masks
-root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/ms/m3m-ms_tile'
+root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/rgb/fuji_tile'
 
 # Count the number of vegetation indices only when apply_veg_indices is True
 num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_veg_indices else 0
@@ -143,15 +94,14 @@ num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_
 config_str = (
     f'tile_[{tile_size}]_o.lap_[{overlap_percentage}]_t.size_[{test_size}]_'
     f'b.size_[{batch_size}]_epochs_[{epochs}]_vis_[{apply_veg_indices}]_num_vi_[{num_veg_indices}]_'
-    f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_'
     f'd._bands_{deleted_bands}_l.rate_[{learning_rate}]'
 ) if delete_bands else (
     f'tile_[{tile_size}]_o.lap_[{overlap_percentage}]_t.size_[{test_size}]_'
     f'b.size_[{batch_size}]_epochs_[{epochs}]_vis_[{apply_veg_indices}]_num_vi_[{num_veg_indices}]_'
-    f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_del_band[false]_l.rate_[{learning_rate}]'
+    f'del_band[false]_l.rate_[{learning_rate}]'
 )
 
-root_model_folder = os.path.join(root_image_folder, f'tsa_unet_train_ms_model&outcomes_{config_str}')
+root_model_folder = os.path.join(root_image_folder, f'tsa_fcn_train_rgb_model&outcomes_{config_str}')
 
 # Check if the "model&outcomes" folder exists, and create it if it doesn't
 if not os.path.exists(root_model_folder):
@@ -171,14 +121,14 @@ def get_image_dimensions(file_path):
     return None, None
 
 # Specify the folder paths for images and masks
-image_folder_path = os.path.join(root_image_folder, 'ms_rois/training')
+image_folder_path = os.path.join(root_image_folder, 'rgb_rois/training')
 mask_folder_path = os.path.join(root_image_folder, 'mask_rois/training')
 
 # Filter image and mask files based on dimensions
 filtered_image_files = []
 filtered_mask_files = []
 
-input_img_folder = os.path.join(root_image_folder, 'ms_rois/training')
+input_img_folder = os.path.join(root_image_folder, 'rgb_rois/training')
 input_mask_folder = os.path.join(root_image_folder, 'mask_rois/training')
 
 img_files = [file for file in os.listdir(input_img_folder) if file.endswith(".tif")]
@@ -232,10 +182,10 @@ for i in range(len(filtered_image_files)):
             y_end = y_start + tile_size
 
             # Extract the image tile
-            input_bands = 4  # Number of input bands
+            input_bands = 3  # Number of input bands
             input_img = np.array([ds_img.GetRasterBand(j + 1).ReadAsArray(x_start, y_start, tile_size, tile_size) for j in range(input_bands)])
-            input_img = np.transpose(input_img, (1, 2, 0))
-            input_img = exposure.equalize_hist(input_img)
+            input_img = np.transpose(input_img, (1,2,0))
+            #input_img = exposure.equalize_hist(input_img) # if necessary
 
             if apply_veg_indices:
                 veg_indices = calculate_veg_indices(input_img)
@@ -244,26 +194,9 @@ for i in range(len(filtered_image_files)):
             if delete_bands:
                 input_img = np.delete(input_img, deleted_bands, axis=2)
 
-            if apply_convolution:
-                for c in range(input_img.shape[2]):
-                    input_img[:, :, c] = convolve(input_img[:, :, c], kernel)
-            
-            if apply_gaussian:
-                input_img = apply_gaussian_blur(input_img)
-
-            if apply_mean:
-                input_img = apply_mean_filter(input_img)
-
             input_mask = ds_mask.GetRasterBand(1).ReadAsArray(x_start, y_start, tile_size, tile_size).astype(int)           
            
-            #image_patches.append(input_img)
-            # Min-Max normalize the image tile per channel
-            input_img_min = input_img.min(axis=(0, 1), keepdims=True)
-            input_img_max = input_img.max(axis=(0, 1), keepdims=True)
-            input_img = (input_img - input_img_min) / (input_img_max - input_img_min + 1e-8)  # add epsilon to avoid division by zero
-
-            image_patches.append(input_img.astype(np.float32))
-
+            image_patches.append(input_img)
             mask_patches.append(input_mask)
 
     print(f"Processed image: {img_file} --> Processed mask: {mask_file}")
@@ -280,10 +213,10 @@ print("mask_patches.shape: {}".format(mask_patches.shape))
 mask_patches_to_categorical = to_categorical(mask_patches, num_classes=n_classes)
 #-------------------------------------------------------------------------------------------------------------#
 # Train-test split
-X_train, X_test, y_train, y_test = train_test_split(image_patches, mask_patches_to_categorical, test_size=test_size, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(image_patches, mask_patches_to_categorical, test_size=0.20, random_state=22)
 #----------------------------------------------------------------------#
 # save, print and confirm the model data
-output_file = os.path.join(root_model_folder, 'unet_trainng_and_validation samples.txt')
+output_file = os.path.join(root_model_folder, 'fcn_trainng_and_validation samples.txt')
 # Save the print results to a text file
 with open(output_file, "w") as file:
     file.write("image_patches.shape: {}\n".format(image_patches.shape))
@@ -309,95 +242,50 @@ print(X_train.shape[3])
 #----------------------------------------------------------------------#
 #-----------------"""**Build the model**"""----------------------------#
 # Import module 
-def UNet(n_classes, image_height, image_width, image_channels):
-    inputs = Input((image_height, image_width, image_channels))
+def FCN(n_classes, image_height, image_width, image_channels):
+    # Input layer
+    inputs = Input(shape=(image_height, image_width, image_channels))
 
-    seed_value = 42
-    random.seed(seed_value)
-    np.random.seed(seed_value)
-    tf.random.set_seed(seed_value)
-    python_random.seed(seed_value)
-    
-    # c1 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(inputs)
-    # c1 = BatchNormalization()(c1)
-    # c1 = Dropout(0.2)(c1)
-    # c1 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c1)
-    # c1 = BatchNormalization()(c1)
-    # p1 = MaxPooling2D((2,2))(c1)
+    # Encoder
+    conv1 = Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
-    c2 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(inputs)
-    c2 = BatchNormalization()(c2)
-    c2 = Dropout(0.3)(c2)
-    c2 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c2)
-    c2 = BatchNormalization()(c2)
-    p2 = MaxPooling2D((2,2))(c2)
+    conv2 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool1)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
 
-    c3 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p2)
-    c3 = BatchNormalization()(c3)
-    c3 = Dropout(0.3)(c3)
-    c3 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c3)
-    c3= BatchNormalization()(c3)
-    p3 = MaxPooling2D((2,2))(c3)
+    conv3 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool2)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
 
-    c4 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p3)
-    c4 = BatchNormalization()(c4)
-    c4 = Dropout(0.3)(c4)
-    c4 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c4)
-    c4 = BatchNormalization()(c4)
-    p4 = MaxPooling2D((2,2))(c4)
+    conv4 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool3)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
 
-    c5 = Conv2D(512, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p4)
-    c5 = BatchNormalization()(c5)
-    c5 = Dropout(0.3)(c5)
-    c5 = Conv2D(512, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c5)
-    c5 = BatchNormalization()(c5)
+    # Decoder
+    up1 = UpSampling2D(size=(2, 2))(pool4)
+    deconv1 = Conv2D(256, (3, 3), activation='relu', padding='same')(up1)
 
-    u6 = Conv2DTranspose(256, (2,2), strides=(2,2), padding="same")(c5)
-    u6 = concatenate([u6, c4])
-    c6 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u6)
-    c6 = BatchNormalization()(c6)
-    c6 = Dropout(0.3)(c6)
-    c6 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c6)
-    c6 = BatchNormalization()(c6)
+    up2 = UpSampling2D(size=(2, 2))(deconv1)
+    deconv2 = Conv2D(128, (3, 3), activation='relu', padding='same')(up2)
 
-    u7 = Conv2DTranspose(128, (2,2), strides=(2,2), padding="same")(c6)
-    u7 = concatenate([u7, c3])
-    c7 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u7)
-    c7 = BatchNormalization()(c7)
-    c7 = Dropout(0.3)(c7)
-    c7 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c7)
-    c7 = BatchNormalization()(c7)
+    up3 = UpSampling2D(size=(2, 2))(deconv2)
+    deconv3 = Conv2D(64, (3, 3), activation='relu', padding='same')(up3)
 
-    u8 = Conv2DTranspose(64, (2,2), strides=(2,2), padding="same")(c7)
-    u8 = concatenate([u8, c2])
-    c8 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u8)
-    c8 = BatchNormalization()(c8)
-    c8 = Dropout(0.3)(c8)
-    c8 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c8)
-    c8 = BatchNormalization()(c8)
+    up4 = UpSampling2D(size=(2, 2))(deconv3)
+    #output = Conv2D(n_classes, (1, 1), activation='softmax')(up4)
+    output = Conv2D(n_classes, (1,1), activation="sigmoid")(up4)
 
-    # u9 = Conv2DTranspose(32, (2,2), strides=(2,2), padding="same")(c8)
-    # u9 = concatenate([u9, c1], axis=3)
-    # c9 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u9)
-    # c9 = BatchNormalization()(c9)
-    # c9 = Dropout(0.2)(c9)
-    # c9 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c9)
-    # c9 = BatchNormalization()(c9)
-
-    #outputs = Conv2D(n_classes, (1,1), activation="softmax")(c9)
-    outputs = Conv2D(n_classes, (1,1), activation="sigmoid")(c8)
-
-    model = Model(inputs=inputs, outputs=outputs)
+    model = Model(inputs=inputs, outputs=output)
     return model
 #----------------------------------------------------------------------#
+# Create the model
 # Create the model
 image_height = X_train.shape[1]
 image_width = X_train.shape[2]
 image_channels = X_train.shape[3]
-model=UNet(n_classes=n_classes, 
+model=FCN(n_classes=n_classes, 
                           image_height=image_height, 
                           image_width=image_width, 
                           image_channels=image_channels)
+model.summary()
 #----------------------------------------------------------------------#
 #Complie the model
 model.compile(
@@ -419,13 +307,12 @@ if not os.path.exists(log_dir):
 #----------------------------------------------------------------------#
 # specify the filepath for where to save the weights
 # weight_path = os.path.join(log_dir, "weights.{epoch:02d}-{val_loss:.2f}.hdf5")
-# best_model_path = os.path.join(root_model_folder, 'unet_save_best_model.hdf5')
-
+# best_model_path = os.path.join(root_model_folder, 'fcn_save_best_model.hdf5')
+#----------------------------------------------------------------------#
 # Define paths
 weight_path = os.path.join(log_dir, "weights.epoch_{epoch:02d}.batch_{batch:04d}.weights.h5")
-best_model_path = os.path.join(root_model_folder, 'unet_save_best_model.keras')
+best_model_path = os.path.join(root_model_folder, 'fcn_save_best_model.keras')
 #----------------------------------------------------------------------#
-# create a ModelCheckpoint for best model
 # create a ModelCheckpoint for best model
 checkpoint_best_model = ModelCheckpoint(
     best_model_path,
@@ -433,15 +320,16 @@ checkpoint_best_model = ModelCheckpoint(
     monitor='val_loss',
     mode='min',
     verbose=1
-)#----------------------------------------------------------------------#
-# create a ModelCheckpoint for save weights
+)
+#----------------------------------------------------------------------#
 # create a ModelCheckpoint for saving weights every 50 batches
 checkpoint_weight = ModelCheckpoint(
     filepath=weight_path,
     save_weights_only=True,
     verbose=1,
     save_freq=50  # saves every 50 batches
-)#----------------------------------------------------------------------#
+)
+#----------------------------------------------------------------------#
 # Start recording time
 start_time = time()
 
@@ -487,7 +375,7 @@ sns.heatmap(cm, annot=True, cmap='viridis', fmt='d', xticklabels=target_names, y
 plt.title('confusion matrix_heatmap')
 plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
-plt.savefig(os.path.join(root_model_folder, 'unet_cm_heatmap_training_validation.png'), bbox_inches='tight', dpi=400)
+plt.savefig(os.path.join(root_model_folder, 'fcn_cm_heatmap_training_validation.png'), bbox_inches='tight', dpi=400)
 plt.show()
 print('Saved confusion matrix_heatmap')
 #------------------------------------------------------------------#
@@ -500,7 +388,7 @@ cr = classification_report(y_test_classes.ravel(), y_pred_classes.ravel(), targe
 print(cr)
 #----------------------------------------------------------------------#
 # Export confusion matrix and classification report as .txt
-file_path = os.path.join(root_model_folder, 'unet_model_training_&_validation_performance_report.txt')
+file_path = os.path.join(root_model_folder, 'fcn_model_training_&_validation_performance_report.txt')
 with open(file_path, 'w') as file:
     file.write(f"Training Time: {training_time} seconds\n")
     file.write("Confusion Matrix:\n")
@@ -514,7 +402,7 @@ print('Saved classification_and_confusion_report')
 # Create a DataFrame from the history
 history_df = pd.DataFrame(history.history)
 # Save the DataFrame to a CSV file
-history_df.to_csv(os.path.join(root_model_folder,'unet_training_history.csv'), index=False)
+history_df.to_csv(os.path.join(root_model_folder,'fcn_training_history.csv'), index=False)
 print('Saved training_history')
 # #----------------------------------------------------------------------#
 # plot binary_accuracy graphs using history

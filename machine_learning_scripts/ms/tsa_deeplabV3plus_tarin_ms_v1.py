@@ -20,23 +20,22 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 # Import necessary functions and classes from Keras
-from keras.utils import to_categorical
 from keras.optimizers import Adam
-from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.metrics import BinaryAccuracy, Precision, Recall, IoU, MeanIoU, FalseNegatives, FalsePositives
+from keras.losses import SparseCategoricalCrossentropy
+from tensorflow.keras.metrics import SparseCategoricalAccuracy, Accuracy, Precision, Recall, IoU, MeanIoU, FalseNegatives, FalsePositives
 from keras.models import Model
 from keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, Dropout, BatchNormalization
 from keras.callbacks import ModelCheckpoint
 #----------------------------------------------------------------------#
 # Set the parameters to control the operations
-apply_veg_indices = True
+apply_veg_indices = True 
 apply_gaussian = False
 apply_mean = False
 apply_convolution=False
-delete_bands = False
+delete_bands = True
 
 # Specify the bands to be deleted
-deleted_bands = [0,1,2,3,4] if delete_bands else None  # Adjust this list based on your scenario
+deleted_bands = [0,1,2] if delete_bands else None  # Adjust this list based on your scenario
 
 # Minimum width and height for filtering
 min_width = 0
@@ -46,14 +45,14 @@ max_height = 20000
 
 tile_size = 64
 overlap_percentage = 0.2
-test_size=0.30
+test_size=0.25
 
 learning_rate=0.001
-batch_size=32
-epochs=200
+batch_size=30       
+epochs=100
 
-n_classes = 2
-target_names = ['bg','tsa']
+n_classes = 5
+target_names = ['LG', 'LB', 'MO', 'OV']
 #----------------------------------------------------------------------#
 def post_idx_calc(index, normalise):
     # Replace nan with zero and inf with finite numbers
@@ -67,17 +66,11 @@ def post_idx_calc(index, normalise):
 # Define function to calculate vegetation indices
 def calculate_veg_indices(input_img):
 # Extract the all channels from the input image
-    # For M3M
-    RedEdge = input_img[:, :,2]
-    nir = input_img[:, :, 3]
-    red = input_img[:, :, 1]
-    green = input_img[:, :, 0]
-
-    # RedEdge = input_img[:, :, 3]
-    # nir = input_img[:, :, 4]
-    # red = input_img[:, :, 2]
-    # green = input_img[:, :, 1]
-    # blue = input_img[:, :, 0]
+    RedEdge = input_img[:, :, 3]
+    nir = input_img[:, :, 4]
+    red = input_img[:, :, 2]
+    green = input_img[:, :, 1]
+    blue = input_img[:, :, 0]
 
     # Calculate vegetation indices
     ndvi = (nir - red) / (nir + red)
@@ -85,11 +78,11 @@ def calculate_veg_indices(input_img):
     ndre = (nir - RedEdge) / (nir + RedEdge)
     gci = (nir)/(green) - 1
     msavi = ((2 * nir) + 1 -(np.sqrt(np.power((2 * nir + 1), 2) - 8*(nir - red))))/2
-    #exg = ((2*green)-red-blue)/(red+green+blue)
+    exg = ((2*green)-red-blue)/(red+green+blue)
     sri = (nir / red)
-   # arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
+    arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
     lci = (nir - RedEdge) / (nir + red)
-   # hrfi = (red - blue) / (green + blue)
+    hrfi = (red - blue) / (green + blue)
     dvi = (nir - red)
     rvi = (nir)/(red)
     tvi = (60*(nir - green)) - (100 * (red - green))
@@ -97,24 +90,22 @@ def calculate_veg_indices(input_img):
     ngrdi = (green - red) / (green + red)
     grvi = (red - green) / (red + green)
     rgi = (red / green)
-   # endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
-   # evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
-   # sipi= (nir - blue) / (nir - red)
+    endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
+    evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
+    sipi= (nir - blue) / (nir - red)
     osavi= (1.16 * (nir - red)) / (nir + red + 0.16)
     gosavi=(nir - green) / (nir + green + 0.16)
-    #exr= ((1.4 * red) - green) / (red + green + blue)
-    #exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
+    exr= ((1.4 * red) - green) / (red + green + blue)
+    exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
     ndi=(green - red) / (green + red)
-  #  gcc= green / (red + green + blue)
+    gcc= green / (red + green + blue)
     reci= (nir) / (RedEdge) - 1
     ndwi= (green - nir) / (green + nir)
 
     #veg_indices = np.stack((ndvi,ndre,hrfi,gndvi,gci,msavi,exg,sri,arvi,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi, endvi, evi,sipi,osavi,gosavi,exr,exgr,ndi,gcc,reci,ndwi), axis=2)
-    #veg_indices = np.stack((ndvi,ndre,gndvi,gci,msavi,sri,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi,osavi,gosavi,ndi,reci,ndwi), axis=2)
     #veg_indices = np.stack((dvi,msavi,gdvi,rgi,gndvi), axis=2)
-
-    veg_indices = np.stack((msavi,ngrdi,grvi,osavi,ndi), axis=2)
-
+    veg_indices = np.stack((dvi,msavi,gdvi), axis=2)
+ 
     return veg_indices
 #----------------------------------------------------------------------#
 # Define a 7x7 low-pass averaging kernel
@@ -123,18 +114,19 @@ kernel = np.ones((kernel_size, kernel_size)) / (kernel_size**2)
 
 # Define a function to apply Gaussian blur to an image
 def apply_gaussian_blur(img):
-    return cv2.GaussianBlur(img, (3,3), 0)
+    return cv2.GaussianBlur(img, (5,5), 0)
 
 # Function to apply mean filter in a 3x3 window
 def apply_mean_filter(img):
-    return cv2.blur(img, (3,3))
+    return cv2.blur(img, (5,5))
 #----------------------------------------------------------------------#
 # Define the tile size and overlap percentage
 tile_size = tile_size
 overlap = int(tile_size * overlap_percentage)
 #----------------------------------------------------------------------#
 # Define the root directory with input images and respective masks
-root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/ms/m3m-ms_tile'
+root_data_folder = r'/home/n10837647/hpc/ant/robbos'
+root_image_folder = r'/home/n10837647/hpc/ant/robbos/input_msi_mask_rois'
 
 # Count the number of vegetation indices only when apply_veg_indices is True
 num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_veg_indices else 0
@@ -151,7 +143,7 @@ config_str = (
     f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_del_band[false]_l.rate_[{learning_rate}]'
 )
 
-root_model_folder = os.path.join(root_image_folder, f'tsa_unet_train_ms_model&outcomes_{config_str}')
+root_model_folder = os.path.join(root_image_folder, f'deeplabv3_spectral_model&outcomes_{config_str}')
 
 # Check if the "model&outcomes" folder exists, and create it if it doesn't
 if not os.path.exists(root_model_folder):
@@ -171,14 +163,14 @@ def get_image_dimensions(file_path):
     return None, None
 
 # Specify the folder paths for images and masks
-image_folder_path = os.path.join(root_image_folder, 'ms_rois/training')
+image_folder_path = os.path.join(root_image_folder, 'msi_rois/training')
 mask_folder_path = os.path.join(root_image_folder, 'mask_rois/training')
 
 # Filter image and mask files based on dimensions
 filtered_image_files = []
 filtered_mask_files = []
 
-input_img_folder = os.path.join(root_image_folder, 'ms_rois/training')
+input_img_folder = os.path.join(root_image_folder, 'msi_rois/training')
 input_mask_folder = os.path.join(root_image_folder, 'mask_rois/training')
 
 img_files = [file for file in os.listdir(input_img_folder) if file.endswith(".tif")]
@@ -232,7 +224,7 @@ for i in range(len(filtered_image_files)):
             y_end = y_start + tile_size
 
             # Extract the image tile
-            input_bands = 4  # Number of input bands
+            input_bands = 5  # Number of input bands
             input_img = np.array([ds_img.GetRasterBand(j + 1).ReadAsArray(x_start, y_start, tile_size, tile_size) for j in range(input_bands)])
             input_img = np.transpose(input_img, (1, 2, 0))
             input_img = exposure.equalize_hist(input_img)
@@ -256,14 +248,7 @@ for i in range(len(filtered_image_files)):
 
             input_mask = ds_mask.GetRasterBand(1).ReadAsArray(x_start, y_start, tile_size, tile_size).astype(int)           
            
-            #image_patches.append(input_img)
-            # Min-Max normalize the image tile per channel
-            input_img_min = input_img.min(axis=(0, 1), keepdims=True)
-            input_img_max = input_img.max(axis=(0, 1), keepdims=True)
-            input_img = (input_img - input_img_min) / (input_img_max - input_img_min + 1e-8)  # add epsilon to avoid division by zero
-
-            image_patches.append(input_img.astype(np.float32))
-
+            image_patches.append(input_img)
             mask_patches.append(input_mask)
 
     print(f"Processed image: {img_file} --> Processed mask: {mask_file}")
@@ -276,14 +261,11 @@ mask_patches = np.array(mask_patches)
 print("image_patches.shape: {}".format(image_patches.shape))
 print("mask_patches.shape: {}".format(mask_patches.shape))
 #----------------------------------------------------------------------#
-# This function takes the mask_patches data and converts it into a categorical representation. 
-mask_patches_to_categorical = to_categorical(mask_patches, num_classes=n_classes)
-#-------------------------------------------------------------------------------------------------------------#
 # Train-test split
-X_train, X_test, y_train, y_test = train_test_split(image_patches, mask_patches_to_categorical, test_size=test_size, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(image_patches, mask_patches, test_size=test_size, random_state=22)
 #----------------------------------------------------------------------#
 # save, print and confirm the model data
-output_file = os.path.join(root_model_folder, 'unet_trainng_and_validation samples.txt')
+output_file = os.path.join(root_model_folder, 'deeplabv3_trainng_and_validation samples.txt')
 # Save the print results to a text file
 with open(output_file, "w") as file:
     file.write("image_patches.shape: {}\n".format(image_patches.shape))
@@ -309,106 +291,68 @@ print(X_train.shape[3])
 #----------------------------------------------------------------------#
 #-----------------"""**Build the model**"""----------------------------#
 # Import module 
-def UNet(n_classes, image_height, image_width, image_channels):
-    inputs = Input((image_height, image_width, image_channels))
+# Define the number of classess (ID 0,1,2,3,4)
+import tensorflow as tf
+from tensorflow.keras import layers
+from tensorflow.keras import Model
 
-    seed_value = 42
-    random.seed(seed_value)
-    np.random.seed(seed_value)
-    tf.random.set_seed(seed_value)
-    python_random.seed(seed_value)
-    
-    # c1 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(inputs)
-    # c1 = BatchNormalization()(c1)
-    # c1 = Dropout(0.2)(c1)
-    # c1 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c1)
-    # c1 = BatchNormalization()(c1)
-    # p1 = MaxPooling2D((2,2))(c1)
-
-    c2 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(inputs)
-    c2 = BatchNormalization()(c2)
-    c2 = Dropout(0.3)(c2)
-    c2 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c2)
-    c2 = BatchNormalization()(c2)
-    p2 = MaxPooling2D((2,2))(c2)
-
-    c3 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p2)
-    c3 = BatchNormalization()(c3)
-    c3 = Dropout(0.3)(c3)
-    c3 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c3)
-    c3= BatchNormalization()(c3)
-    p3 = MaxPooling2D((2,2))(c3)
-
-    c4 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p3)
-    c4 = BatchNormalization()(c4)
-    c4 = Dropout(0.3)(c4)
-    c4 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c4)
-    c4 = BatchNormalization()(c4)
-    p4 = MaxPooling2D((2,2))(c4)
-
-    c5 = Conv2D(512, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(p4)
-    c5 = BatchNormalization()(c5)
-    c5 = Dropout(0.3)(c5)
-    c5 = Conv2D(512, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c5)
-    c5 = BatchNormalization()(c5)
-
-    u6 = Conv2DTranspose(256, (2,2), strides=(2,2), padding="same")(c5)
-    u6 = concatenate([u6, c4])
-    c6 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u6)
-    c6 = BatchNormalization()(c6)
-    c6 = Dropout(0.3)(c6)
-    c6 = Conv2D(256, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c6)
-    c6 = BatchNormalization()(c6)
-
-    u7 = Conv2DTranspose(128, (2,2), strides=(2,2), padding="same")(c6)
-    u7 = concatenate([u7, c3])
-    c7 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u7)
-    c7 = BatchNormalization()(c7)
-    c7 = Dropout(0.3)(c7)
-    c7 = Conv2D(128, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c7)
-    c7 = BatchNormalization()(c7)
-
-    u8 = Conv2DTranspose(64, (2,2), strides=(2,2), padding="same")(c7)
-    u8 = concatenate([u8, c2])
-    c8 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u8)
-    c8 = BatchNormalization()(c8)
-    c8 = Dropout(0.3)(c8)
-    c8 = Conv2D(64, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c8)
-    c8 = BatchNormalization()(c8)
-
-    # u9 = Conv2DTranspose(32, (2,2), strides=(2,2), padding="same")(c8)
-    # u9 = concatenate([u9, c1], axis=3)
-    # c9 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(u9)
-    # c9 = BatchNormalization()(c9)
-    # c9 = Dropout(0.2)(c9)
-    # c9 = Conv2D(32, (3,3), activation="relu", kernel_initializer="he_normal", padding="same")(c9)
-    # c9 = BatchNormalization()(c9)
-
-    #outputs = Conv2D(n_classes, (1,1), activation="softmax")(c9)
-    outputs = Conv2D(n_classes, (1,1), activation="sigmoid")(c8)
-
-    model = Model(inputs=inputs, outputs=outputs)
-    return model
-#----------------------------------------------------------------------#
-# Create the model
 image_height = X_train.shape[1]
 image_width = X_train.shape[2]
 image_channels = X_train.shape[3]
-model=UNet(n_classes=n_classes, 
-                          image_height=image_height, 
-                          image_width=image_width, 
-                          image_channels=image_channels)
+num_classes=5
+
+def DeepLabV3Plus(input_shape=(image_height, image_width, image_channels), num_classes=num_classes):
+    # Create input tensor with 5 channels
+    input_tensor = tf.keras.Input(shape=input_shape)
+
+    # Feature Pyramid Network
+    x = layers.Conv2D(64, (3, 3), padding="same", activation="relu")(input_tensor)
+    x = layers.Conv2D(64, (3, 3), padding="same", activation="relu")(x)
+    x = layers.MaxPooling2D((2, 2))(x)
+
+    x = layers.Conv2D(128, (3, 3), padding="same", activation="relu")(x)
+    x = layers.Conv2D(128, (3, 3), padding="same", activation="relu")(x)
+    x = layers.MaxPooling2D((2, 2))(x)
+
+    x = layers.Conv2D(256, (3, 3), padding="same", activation="relu")(x)
+    x = layers.Conv2D(256, (3, 3), padding="same", activation="relu")(x)
+    x = layers.MaxPooling2D((2, 2))(x)
+
+    # ASPP (Atrous Spatial Pyramid Pooling)
+    x = layers.Conv2D(256, (1, 1), padding="same", activation="relu")(x)
+    x = layers.Conv2D(256, (3, 3), dilation_rate=6, padding="same", activation="relu")(x)
+    x = layers.Conv2D(256, (3, 3), dilation_rate=12, padding="same", activation="relu")(x)
+    x = layers.Conv2D(256, (3, 3), dilation_rate=18, padding="same", activation="relu")(x)
+
+    # Upsampling
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(128, (3, 3), padding="same", activation="relu")(x)
+    
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(64, (3, 3), padding="same", activation="relu")(x)
+
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(32, (3, 3), padding="same", activation="relu")(x)
+
+    # Output layer
+    x = layers.Conv2D(num_classes, (1, 1), activation="softmax")(x)
+
+    # Create model
+    model = Model(inputs=input_tensor, outputs=x)
+
+    return model
+
+# Create DeepLabV3+ model
+model = DeepLabV3Plus()
+
+# Display model summary
+model.summary()
+
 #----------------------------------------------------------------------#
 #Complie the model
-model.compile(
-    optimizer=Adam(learning_rate=learning_rate),
-    loss=BinaryCrossentropy(),  # Use BinaryCrossentropy for binary classification
-    metrics=[BinaryAccuracy(),Precision(class_id=1), Recall(class_id=1), FalseNegatives(), FalsePositives()])
+#model.compile(optimizer=Adam(), loss=tf.keras.losses.SparseCategoricalCrossentropy(ignore_class= 0), metrics=['SparseCategoricalAccuracy'])
+model.compile(optimizer=Adam(learning_rate=learning_rate), loss=tf.keras.losses.SparseCategoricalCrossentropy(ignore_class= 0), metrics=['SparseCategoricalAccuracy'])
 
-# model.compile(
-#     optimizer=Adam(learning_rate=learning_rate),
-#     loss=BinaryCrossentropy(),  # Use BinaryCrossentropy for binary classification
-#     metrics=[BinaryAccuracy()])
 #----------------------------------------------------------------------#
 # Model training
 #----------------------------------------------------------------------#
@@ -418,65 +362,53 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 #----------------------------------------------------------------------#
 # specify the filepath for where to save the weights
-# weight_path = os.path.join(log_dir, "weights.{epoch:02d}-{val_loss:.2f}.hdf5")
-# best_model_path = os.path.join(root_model_folder, 'unet_save_best_model.hdf5')
-
-# Define paths
-weight_path = os.path.join(log_dir, "weights.epoch_{epoch:02d}.batch_{batch:04d}.weights.h5")
-best_model_path = os.path.join(root_model_folder, 'unet_save_best_model.keras')
+weight_path = os.path.join(log_dir, "weights.{epoch:02d}-{val_loss:.2f}.hdf5")
+best_model_path = os.path.join(root_model_folder, 'deeplabv3_save_best_model.hdf5')
 #----------------------------------------------------------------------#
 # create a ModelCheckpoint for best model
-# create a ModelCheckpoint for best model
-checkpoint_best_model = ModelCheckpoint(
-    best_model_path,
-    save_best_only=True,
-    monitor='val_loss',
-    mode='min',
-    verbose=1
-)#----------------------------------------------------------------------#
+checkpoint_best_model = ModelCheckpoint(best_model_path, save_best_only=True, monitor='val_loss', mode='min')
+#----------------------------------------------------------------------#
 # create a ModelCheckpoint for save weights
-# create a ModelCheckpoint for saving weights every 50 batches
-checkpoint_weight = ModelCheckpoint(
-    filepath=weight_path,
-    save_weights_only=True,
-    verbose=1,
-    save_freq=50  # saves every 50 batches
-)#----------------------------------------------------------------------#
+checkpoint_weight = ModelCheckpoint(weight_path, ave_weights_only=True, verbose=1, period=50)
+#----------------------------------------------------------------------#
 # Start recording time
 start_time = time()
 
+# seed_value = 22
+# np.random.seed(seed_value)
+# tf.random.set_seed(seed_value)
+
 # Train the model with class weights
-history = model.fit(
-    X_train, y_train, 
-    batch_size=batch_size, 
-    verbose=1,
-    epochs=epochs,
-    validation_data=(X_test, y_test), 
-    callbacks=[checkpoint_best_model, checkpoint_weight],
-    shuffle=True
-)
+history = model.fit(X_train, y_train, 
+                    batch_size=batch_size, 
+                    verbose=1,
+                    epochs=epochs,
+                    validation_data=(X_test, y_test), 
+                    callbacks=[checkpoint_best_model, checkpoint_weight],
+                    shuffle=True)
 
 # Calculate and print the training time
 end_time = time()
 training_time = end_time - start_time
 print(f"Training time: {training_time} seconds")
 #------------------------------------------------------------------#
-#Confusion_matrix and Classification_report
-#----------------#
-# Confusion_matrix
-#----------------#
+mask = (y_test != 0)
+
+# Apply the mask to ignore class 0
+y_test_mask = y_test[mask]
 
 # Predict on the test data
 y_pred = model.predict(X_test)
 
-# Convert the predicted and true masks to class labels
 y_pred_classes = np.argmax(y_pred, axis=-1)
-y_test_classes = np.argmax(y_test, axis=-1)
 
-# Compute the confusion matrix
-cm = confusion_matrix(y_test_classes.ravel(), y_pred_classes.ravel())
+# Apply the mask to ignore class -1 in y_pred
+y_pred_mask = y_pred_classes[mask]
 
-# Print the confusion matrix
+# Calculate the confusion matrix
+cm = confusion_matrix(y_test_mask.flatten(), y_pred_mask.flatten())
+
+print("Confusion Matrix:")
 print(cm)
 #------------------------------------------------------------------#
 # Plot the confusion matrix 
@@ -487,20 +419,20 @@ sns.heatmap(cm, annot=True, cmap='viridis', fmt='d', xticklabels=target_names, y
 plt.title('confusion matrix_heatmap')
 plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
-plt.savefig(os.path.join(root_model_folder, 'unet_cm_heatmap_training_validation.png'), bbox_inches='tight', dpi=400)
+plt.savefig(os.path.join(root_model_folder, 'deeplabv3_cm_heatmap_training_validation.png'), bbox_inches='tight', dpi=400)
 plt.show()
 print('Saved confusion matrix_heatmap')
 #------------------------------------------------------------------#
 #---------------------#
 # classification report
 #---------------------#
-cr = classification_report(y_test_classes.ravel(), y_pred_classes.ravel(), target_names=target_names)
+cr = classification_report(y_test_mask.flatten(), y_pred_mask.flatten(), target_names=target_names)
 
 # Print the classification report
 print(cr)
 #----------------------------------------------------------------------#
 # Export confusion matrix and classification report as .txt
-file_path = os.path.join(root_model_folder, 'unet_model_training_&_validation_performance_report.txt')
+file_path = os.path.join(root_model_folder, 'deeplabv3_model_training_&_validation_performance_report.txt')
 with open(file_path, 'w') as file:
     file.write(f"Training Time: {training_time} seconds\n")
     file.write("Confusion Matrix:\n")
@@ -514,96 +446,101 @@ print('Saved classification_and_confusion_report')
 # Create a DataFrame from the history
 history_df = pd.DataFrame(history.history)
 # Save the DataFrame to a CSV file
-history_df.to_csv(os.path.join(root_model_folder,'unet_training_history.csv'), index=False)
+history_df.to_csv(os.path.join(root_model_folder,'deeplabv3_training_history.csv'), index=False)
 print('Saved training_history')
-# #----------------------------------------------------------------------#
-# plot binary_accuracy graphs using history
-num_epochs = len(history.history['binary_accuracy'])
+#----------------------------------------------------------------------#
+# plot graphs using history
+num_epochs = len(history.history['sparse_categorical_accuracy'])
 # Plot the accuracy
 plt.figure(figsize=(10, 8))
-plt.plot(range(1, num_epochs + 1), history.history['binary_accuracy'])
-plt.plot(range(1, num_epochs + 1), history.history['val_binary_accuracy'])
+plt.plot(range(1, num_epochs + 1), history.history['sparse_categorical_accuracy'])
+plt.plot(range(1, num_epochs + 1), history.history['val_sparse_categorical_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'Accuracy.png'), bbox_inches='tight')
+plt.savefig(os.path.join(root_model_folder, 'deeplabv3_Accuracy.png'), bbox_inches='tight')
 plt.tight_layout()
 plt.show()
 print('Saved accuracy graph')
 #----------------------------------------------------------------------#
-# plot loss graphs using history
+# plot graphs using history
 num_epochs = len(history.history['loss'])
 # Plot the accuracy
 plt.figure(figsize=(10, 8))
 plt.plot(range(1, num_epochs + 1), history.history['loss'])
 plt.plot(range(1, num_epochs + 1), history.history['val_loss'])
 plt.title('Model loss')
-plt.ylabel('LOss')
+plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'loss.png'), bbox_inches='tight')
+plt.savefig(os.path.join(root_model_folder, 'deeplabv3_loss.png'), bbox_inches='tight')
 plt.tight_layout()
 plt.show()
 print('Saved loss graph')
-#----------------------------------------------------------------------#
-# plot precision graphs using history
-num_epochs = len(history.history['precision'])
-# Plot the accuracy
+
+
+# Find the index of the 25th epoch
+start_epoch = 25
+start_epoch_index = start_epoch - 1  # Subtract 1 to account for 0-based indexing
+
+# Get the relevant data from the history
+train_loss = history.history['loss'][start_epoch_index:]
+val_loss = history.history['val_loss'][start_epoch_index:]
+
+# Plot the loss from the 25th epoch
 plt.figure(figsize=(10, 8))
-plt.plot(range(1, num_epochs + 1), history.history['precision'])
-plt.plot(range(1, num_epochs + 1), history.history['val_precision'])
-plt.title('Model precision')
-plt.ylabel('precision(class id=1)')
+plt.plot(range(start_epoch, num_epochs + 1), train_loss, label='Train')
+plt.plot(range(start_epoch, num_epochs + 1), val_loss, label='Test')
+plt.title('Model loss')
+plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'precision.png'), bbox_inches='tight')
+plt.legend(loc='upper left')
+plt.savefig(os.path.join(root_model_folder, 'deeplabv3_loss_from_25.png'), bbox_inches='tight')
 plt.tight_layout()
 plt.show()
-print('Saved precision graph')
-#----------------------------------------------------------------------#
-# plot recall graphs using history
-num_epochs = len(history.history['recall'])
-# Plot the accuracy
+print('Saved loss_from_25 graph')
+
+
+# Find the index of the 25th epoch
+start_epoch = 50
+start_epoch_index = start_epoch - 1  # Subtract 1 to account for 0-based indexing
+
+# Get the relevant data from the history
+train_loss = history.history['loss'][start_epoch_index:]
+val_loss = history.history['val_loss'][start_epoch_index:]
+
+# Plot the loss from the 25th epoch
 plt.figure(figsize=(10, 8))
-plt.plot(range(1, num_epochs + 1), history.history['recall'])
-plt.plot(range(1, num_epochs + 1), history.history['val_recall'])
-plt.title('Model recall')
-plt.ylabel('recall(class id=1)')
+plt.plot(range(start_epoch, num_epochs + 1), train_loss, label='Train')
+plt.plot(range(start_epoch, num_epochs + 1), val_loss, label='Test')
+plt.title('Model loss')
+plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'recall.png'), bbox_inches='tight')
+plt.legend(loc='upper left')
+plt.savefig(os.path.join(root_model_folder, 'deeplabv3_loss_from_50.png'), bbox_inches='tight')
 plt.tight_layout()
 plt.show()
-print('Saved recall graph')
+print('Saved loss_from_50 graph')
 #----------------------------------------------------------------------#
-# plot false_negatives graphs using history
-num_epochs = len(history.history['false_negatives'])
-# Plot the accuracy
-plt.figure(figsize=(10, 8))
-plt.plot(range(1, num_epochs + 1), history.history['false_negatives'])
-plt.plot(range(1, num_epochs + 1), history.history['val_false_negatives'])
-plt.title('Model FalseNegatives')
-plt.ylabel('FalseNegatives')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'FalseNegatives.png'), bbox_inches='tight')
-plt.tight_layout()
-plt.show()
-print('Saved FalseNegatives graph')
-#----------------------------------------------------------------------#
-# plot false_positives graphs using history
-num_epochs = len(history.history['false_positives'])
-# Plot the accuracy
-plt.figure(figsize=(10, 8))
-plt.plot(range(1, num_epochs + 1), history.history['false_positives'])
-plt.plot(range(1, num_epochs + 1), history.history['val_false_positives'])
-plt.title('Model FalsePositives')
-plt.ylabel('FalsePositives')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.savefig(os.path.join(root_model_folder, 'FalsePositives.png'), bbox_inches='tight')
-plt.tight_layout()
-plt.show()
-print('Saved FalsePositives graph')
-#--------------------------------------------xxxxxx----------------------------------------------------------#
+#IOU
+# Calculate and save IoU for each class
+class_iou = []
+with open(file_path, 'a') as file:
+    file.write("\n\nIoU Results:\n")
+    for i in range(n_classes):
+        true_class = (y_test_mask == i)
+        pred_class = (y_pred_mask == i)
+        intersection = np.sum(true_class * pred_class)
+        union = np.sum(true_class) + np.sum(pred_class) - intersection
+        iou = intersection / union
+        class_iou.append(iou)
+        file.write("IoU for class {}: {:.2f}\n".format(i+1, iou))
+        print("IoU for class {}: {:.2f}".format(i+1, iou))
+# Calculate and save average IoU
+average_iou = np.mean(class_iou)
+with open(file_path, 'a') as file:
+    file.write("Average IoU: {:.2f}".format(average_iou))
+    print("Average IoU: {:.2f}".format(average_iou))
+print('Saved IoU results')
+#-------------------------xxxxxx---------------------------------------#

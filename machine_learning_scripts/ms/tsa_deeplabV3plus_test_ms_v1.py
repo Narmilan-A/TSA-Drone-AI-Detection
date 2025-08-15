@@ -22,14 +22,14 @@ from keras.utils import to_categorical
 from keras.models import load_model
 #----------------------------------------------------------------------#
 # Set the parameters to control the operations
-apply_veg_indices = True
+apply_veg_indices = True 
 apply_gaussian = False
 apply_mean = False
 apply_convolution=False
-delete_bands = False
+delete_bands = True
 
 # Specify the bands to be deleted
-deleted_bands = [0,1,2,3,4] if delete_bands else None  # Adjust this list based on your scenario
+deleted_bands = [0,1,2] if delete_bands else None  # Adjust this list based on your scenario
 
 # Minimum width and height for filtering
 min_width = 0
@@ -39,14 +39,14 @@ max_height = 20000
 
 tile_size = 64
 overlap_percentage = 0.2
-test_size=0.30
+test_size=0.25
 
 learning_rate=0.001
-batch_size=32
-epochs=200
+batch_size=30       
+epochs=100
 
-n_classes = 2
-target_names = ['bg','tsa']
+n_classes = 5
+target_names = ['LG', 'LB', 'MO', 'OV']
 #----------------------------------------------------------------------#
 def post_idx_calc(index, normalise):
     # Replace nan with zero and inf with finite numbers
@@ -60,17 +60,11 @@ def post_idx_calc(index, normalise):
 # Define function to calculate vegetation indices
 def calculate_veg_indices(input_img):
 # Extract the all channels from the input image
-    # For M3M
-    RedEdge = input_img[:, :,2]
-    nir = input_img[:, :, 3]
-    red = input_img[:, :, 1]
-    green = input_img[:, :, 0]
-
-    # RedEdge = input_img[:, :, 3]
-    # nir = input_img[:, :, 4]
-    # red = input_img[:, :, 2]
-    # green = input_img[:, :, 1]
-    # blue = input_img[:, :, 0]
+    RedEdge = input_img[:, :, 3]
+    nir = input_img[:, :, 4]
+    red = input_img[:, :, 2]
+    green = input_img[:, :, 1]
+    blue = input_img[:, :, 0]
 
     # Calculate vegetation indices
     ndvi = (nir - red) / (nir + red)
@@ -78,11 +72,11 @@ def calculate_veg_indices(input_img):
     ndre = (nir - RedEdge) / (nir + RedEdge)
     gci = (nir)/(green) - 1
     msavi = ((2 * nir) + 1 -(np.sqrt(np.power((2 * nir + 1), 2) - 8*(nir - red))))/2
-    #exg = ((2*green)-red-blue)/(red+green+blue)
+    exg = ((2*green)-red-blue)/(red+green+blue)
     sri = (nir / red)
-   # arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
+    arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
     lci = (nir - RedEdge) / (nir + red)
-   # hrfi = (red - blue) / (green + blue)
+    hrfi = (red - blue) / (green + blue)
     dvi = (nir - red)
     rvi = (nir)/(red)
     tvi = (60*(nir - green)) - (100 * (red - green))
@@ -90,24 +84,22 @@ def calculate_veg_indices(input_img):
     ngrdi = (green - red) / (green + red)
     grvi = (red - green) / (red + green)
     rgi = (red / green)
-   # endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
-   # evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
-   # sipi= (nir - blue) / (nir - red)
+    endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
+    evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
+    sipi= (nir - blue) / (nir - red)
     osavi= (1.16 * (nir - red)) / (nir + red + 0.16)
     gosavi=(nir - green) / (nir + green + 0.16)
-    #exr= ((1.4 * red) - green) / (red + green + blue)
-    #exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
+    exr= ((1.4 * red) - green) / (red + green + blue)
+    exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
     ndi=(green - red) / (green + red)
-  #  gcc= green / (red + green + blue)
+    gcc= green / (red + green + blue)
     reci= (nir) / (RedEdge) - 1
     ndwi= (green - nir) / (green + nir)
 
     #veg_indices = np.stack((ndvi,ndre,hrfi,gndvi,gci,msavi,exg,sri,arvi,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi, endvi, evi,sipi,osavi,gosavi,exr,exgr,ndi,gcc,reci,ndwi), axis=2)
-    #veg_indices = np.stack((ndvi,ndre,gndvi,gci,msavi,sri,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi,osavi,gosavi,ndi,reci,ndwi), axis=2)
     #veg_indices = np.stack((dvi,msavi,gdvi,rgi,gndvi), axis=2)
-
-    veg_indices = np.stack((msavi,ngrdi,grvi,osavi,ndi), axis=2)
-
+    veg_indices = np.stack((dvi,msavi,gdvi), axis=2)
+ 
     return veg_indices
 #----------------------------------------------------------------------#
 # Define a 7x7 low-pass averaging kernel
@@ -123,11 +115,12 @@ def apply_mean_filter(img):
     return cv2.blur(img, (3,3))
 #----------------------------------------------------------------------#
 # Define the tile size and overlap percentage
-tile_size = tile_size
-overlap = int(tile_size * overlap_percentage)
+tile_size = 64
+overlap = int(tile_size * 0.1)
 #----------------------------------------------------------------------#
 # Define the root directory with input images and respective masks
-root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/ms/m3m-ms_tile'
+root_data_folder = r'/home/n10837647/hpc/ant/robbos'
+root_image_folder = r'/home/n10837647/hpc/ant/robbos/input_msi_mask_rois'
 
 # Count the number of vegetation indices only when apply_veg_indices is True
 num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_veg_indices else 0
@@ -144,10 +137,10 @@ config_str = (
     f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_del_band[false]_l.rate_[{learning_rate}]'
 )
 
-root_model_folder = os.path.join(root_image_folder, f'tsa_unet_train_ms_model&outcomes_{config_str}')
+root_model_folder = os.path.join(root_image_folder, f'deeplabv3_spectral_model&outcomes_{config_str}')
 #----------------------------------------------------------------------#
-# Load unet model
-unet_model = load_model(os.path.join(root_model_folder,'unet_save_best_model.keras'))
+# Load deeplabv3+ model
+deeplabv3_model = load_model(os.path.join(root_model_folder,'deeplabv3_save_best_model.hdf5'))
 print("Model loaded")
 #----------------------------------------------------------------------#
 # Store the tiled images and masks
@@ -164,7 +157,7 @@ def get_image_dimensions(file_path):
     return None, None
 
 # Specify the folder paths for images and masks
-image_folder_path = os.path.join(root_image_folder, 'ms_rois/testing')
+image_folder_path = os.path.join(root_image_folder, 'msi_rois/testing')
 mask_folder_path = os.path.join(root_image_folder, 'mask_rois/testing')
 
 # Minimum width and height for filtering
@@ -177,7 +170,7 @@ max_height = 20000
 filtered_image_files = []
 filtered_mask_files = []
 
-input_img_folder = os.path.join(root_image_folder, 'ms_rois/testing')
+input_img_folder = os.path.join(root_image_folder, 'msi_rois/testing')
 input_mask_folder = os.path.join(root_image_folder, 'mask_rois/testing')
 
 img_files = [file for file in os.listdir(input_img_folder) if file.endswith(".tif")]
@@ -231,7 +224,7 @@ for i in range(len(filtered_image_files)):
             y_end = y_start + tile_size
 
             # Extract the image tile
-            input_bands = 4  # Number of input bands
+            input_bands = 5  # Number of input bands
             input_img = np.array([ds_img.GetRasterBand(j + 1).ReadAsArray(x_start, y_start, tile_size, tile_size) for j in range(input_bands)])
             input_img = np.transpose(input_img, (1, 2, 0))
             input_img = exposure.equalize_hist(input_img)
@@ -255,14 +248,7 @@ for i in range(len(filtered_image_files)):
 
             input_mask = ds_mask.GetRasterBand(1).ReadAsArray(x_start, y_start, tile_size, tile_size).astype(int)
            
-            #image_patches.append(input_img)
-            # Min-Max normalize the image tile per channel
-            input_img_min = input_img.min(axis=(0, 1), keepdims=True)
-            input_img_max = input_img.max(axis=(0, 1), keepdims=True)
-            input_img = (input_img - input_img_min) / (input_img_max - input_img_min + 1e-8)  # add epsilon to avoid division by zero
-
-            image_patches.append(input_img.astype(np.float32))
-
+            image_patches.append(input_img)
             mask_patches.append(input_mask)
 
     print(f"Processed image: {img_file} --> Processed mask: {mask_file}")
@@ -275,32 +261,37 @@ mask_patches = np.array(mask_patches)
 print("image_patches.shape: {}".format(image_patches.shape))
 print("mask_patches.shape: {}".format(mask_patches.shape))
 
-output_file = os.path.join(root_model_folder, 'unet_testing_samples.txt')
+output_file = os.path.join(root_model_folder, 'deepalbv3_testing_samples.txt')
 # Save the print results to a text file
 with open(output_file, "w") as file:
     file.write("image_patches.shape: {}\n".format(image_patches.shape))
     file.write("mask_patches.shape: {}\n".format(mask_patches.shape))
 #----------------------------------------------------------------------#
-# This function takes the mask_patches data and converts it into a categorical representation. 
-mask_patches_to_categorical = to_categorical(mask_patches, num_classes=2)
-#-------------------------------------------------------------------------------------------------------------#
 #Confusion_matrix and Classification_report
 #----------------#
 # Confusion_matrix
 #----------------#
+#Create the mask
 
-# Predict on the validation data
-y_pred = unet_model.predict(image_patches)
+mask = (mask_patches != 0)
 
-# Convert the predicted and true masks to class labels
+# Apply the mask to ignore class -1
+y_test_mask = mask_patches[mask]
+
+# Predict on the test data
+y_pred = deeplabv3_model.predict(image_patches)
+
 y_pred_classes = np.argmax(y_pred, axis=-1)
-y_test_classes = np.argmax(mask_patches_to_categorical, axis=-1)
 
-# Compute the confusion matrix
-cm = confusion_matrix(y_test_classes.ravel(), y_pred_classes.ravel())
+# Apply the mask to ignore class -1 in y_pred
+y_pred_mask = y_pred_classes[mask]
 
-# Print the confusion matrix
+# Calculate the confusion matrix
+cm = confusion_matrix(y_test_mask.flatten(), y_pred_mask.flatten())
+
+print("Confusion Matrix:")
 print(cm)
+
 # #------------------------------------------------------------------#
 # Plot the confusion matrix 
 
@@ -310,20 +301,20 @@ sns.heatmap(cm, annot=True, cmap='viridis', fmt='d', xticklabels=target_names, y
 plt.title('confusion matrix_heatmap')
 plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
-plt.savefig(os.path.join(root_model_folder, 'unet_cm_heatmap_testing.png'), bbox_inches='tight')
+plt.savefig(os.path.join(root_model_folder, 'deepalbv3_cm_heatmap_testing.png'), bbox_inches='tight')
 plt.show()
 print('Saved confusion matrix_heatmap')
 #------------------------------------------------------------------#
 #---------------------#
 # classification report
 #---------------------#
-cr = classification_report(y_test_classes.ravel(), y_pred_classes.ravel(), target_names=target_names)
+cr = classification_report(y_test_mask.flatten(), y_pred_mask.flatten(), target_names=target_names)
 
 # Print the classification report
 print(cr)
 #------------------------------------------------------------------#
 # Export confusion matrix and classification report as .txt
-file_path = os.path.join(root_model_folder, 'unet_model_testing_performance_report.txt')
+file_path = os.path.join(root_model_folder, 'deepalbv3_model_testing_performance_report.txt')
 with open(file_path, 'w') as file:
     file.write("Confusion Matrix:\n")
     file.write(str(cm))
@@ -337,9 +328,9 @@ print('Saved classification_and_confusion_report')
 class_iou = []
 with open(file_path, 'a') as file:
     file.write("\n\nIoU Results:\n")
-    for i in range(2):
-        true_class = (y_test_classes == i)
-        pred_class = (y_pred_classes == i)
+    for i in range(5):
+        true_class = (y_test_mask.flatten() == i)
+        pred_class = (y_pred_mask.flatten() == i)
         intersection = np.sum(true_class * pred_class)
         union = np.sum(true_class) + np.sum(pred_class) - intersection
         iou = intersection / union

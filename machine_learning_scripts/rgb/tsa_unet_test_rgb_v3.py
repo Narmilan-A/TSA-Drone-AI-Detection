@@ -22,14 +22,11 @@ from keras.utils import to_categorical
 from keras.models import load_model
 #----------------------------------------------------------------------#
 # Set the parameters to control the operations
-apply_veg_indices = True
-apply_gaussian = False
-apply_mean = False
-apply_convolution=False
+apply_veg_indices = False 
 delete_bands = False
 
 # Specify the bands to be deleted
-deleted_bands = [0,1,2,3,4] if delete_bands else None  # Adjust this list based on your scenario
+deleted_bands = [0,1,2] if delete_bands else None  # Adjust this list based on your scenario - Deleting the red band - Index 0 mean: 1st band
 
 # Minimum width and height for filtering
 min_width = 0
@@ -37,97 +34,55 @@ min_height = 0
 max_width = 20000
 max_height = 20000
 
-tile_size = 64
-overlap_percentage = 0.2
+tile_size = 256
+overlap_percentage = 0.3
 test_size=0.30
 
 learning_rate=0.001
-batch_size=32
+batch_size=16
 epochs=200
 
 n_classes = 2
 target_names = ['bg','tsa']
 #----------------------------------------------------------------------#
-def post_idx_calc(index, normalise):
-    # Replace nan with zero and inf with finite numbers
-    idx = np.nan_to_num(index)
-    if normalise:
-        return cv2.normalize(
-            idx, None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-    else:
-        return idx
+# def post_idx_calc(index, normalise):
+#     # Replace nan with zero and inf with finite numbers
+#     idx = np.nan_to_num(index)
+#     if normalise:
+#         return cv2.normalize(
+#             idx, None, alpha=0.0, beta=1.0, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+#     else:
+#         return idx
 
 # Define function to calculate vegetation indices
 def calculate_veg_indices(input_img):
 # Extract the all channels from the input image
-    # For M3M
-    RedEdge = input_img[:, :,2]
-    nir = input_img[:, :, 3]
-    red = input_img[:, :, 1]
-    green = input_img[:, :, 0]
-
-    # RedEdge = input_img[:, :, 3]
-    # nir = input_img[:, :, 4]
-    # red = input_img[:, :, 2]
-    # green = input_img[:, :, 1]
-    # blue = input_img[:, :, 0]
+    red = input_img[:, :, 0]
+    green = input_img[:, :, 1]
+    blue = input_img[:, :, 2]
 
     # Calculate vegetation indices
-    ndvi = (nir - red) / (nir + red)
-    gndvi = (nir - green) / (nir + green)
-    ndre = (nir - RedEdge) / (nir + RedEdge)
-    gci = (nir)/(green) - 1
-    msavi = ((2 * nir) + 1 -(np.sqrt(np.power((2 * nir + 1), 2) - 8*(nir - red))))/2
-    #exg = ((2*green)-red-blue)/(red+green+blue)
-    sri = (nir / red)
-   # arvi = (nir - (2*red - blue)) / (nir + (2*red - blue))
-    lci = (nir - RedEdge) / (nir + red)
-   # hrfi = (red - blue) / (green + blue)
-    dvi = (nir - red)
-    rvi = (nir)/(red)
-    tvi = (60*(nir - green)) - (100 * (red - green))
-    gdvi = (nir - green)
+    exg = ((2*green)-red-blue)/(red+green+blue)
+    hrfi = (red - blue) / (green + blue)
     ngrdi = (green - red) / (green + red)
     grvi = (red - green) / (red + green)
     rgi = (red / green)
-   # endvi = ((nir + green) - (2 * blue)) / ((nir + green) + (2 * blue))
-   # evi=(2.5 * (nir - red)) / (nir + (6 * red) - (7.5 * blue) + 1)
-   # sipi= (nir - blue) / (nir - red)
-    osavi= (1.16 * (nir - red)) / (nir + red + 0.16)
-    gosavi=(nir - green) / (nir + green + 0.16)
-    #exr= ((1.4 * red) - green) / (red + green + blue)
-    #exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
+    exr= ((1.4 * red) - green) / (red + green + blue)
+    exgr= (((2 * green) - red - blue) / (red + green + blue)) - (((1.4 * red) - green) / (red + green + blue))
     ndi=(green - red) / (green + red)
-  #  gcc= green / (red + green + blue)
-    reci= (nir) / (RedEdge) - 1
-    ndwi= (green - nir) / (green + nir)
+    gcc= green / (red + green + blue)
 
-    #veg_indices = np.stack((ndvi,ndre,hrfi,gndvi,gci,msavi,exg,sri,arvi,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi, endvi, evi,sipi,osavi,gosavi,exr,exgr,ndi,gcc,reci,ndwi), axis=2)
-    #veg_indices = np.stack((ndvi,ndre,gndvi,gci,msavi,sri,lci, dvi, rvi, tvi, gdvi, ngrdi, grvi, rgi,osavi,gosavi,ndi,reci,ndwi), axis=2)
-    #veg_indices = np.stack((dvi,msavi,gdvi,rgi,gndvi), axis=2)
-
-    veg_indices = np.stack((msavi,ngrdi,grvi,osavi,ndi), axis=2)
-
+    #veg_indices = np.stack((exg,hrfi,ngrdi,grvi,rgi,exr,exgr,ndi,gcc), axis=2)
+    veg_indices = np.stack((exg,hrfi,ngrdi,grvi), axis=2)
+ 
     return veg_indices
-#----------------------------------------------------------------------#
-# Define a 7x7 low-pass averaging kernel
-kernel_size = 3
-kernel = np.ones((kernel_size, kernel_size)) / (kernel_size**2)
-
-# Define a function to apply Gaussian blur to an image
-def apply_gaussian_blur(img):
-    return cv2.GaussianBlur(img, (3,3), 0)
-
-# Function to apply mean filter in a 3x3 window
-def apply_mean_filter(img):
-    return cv2.blur(img, (3,3))
 #----------------------------------------------------------------------#
 # Define the tile size and overlap percentage
 tile_size = tile_size
 overlap = int(tile_size * overlap_percentage)
 #----------------------------------------------------------------------#
 # Define the root directory with input images and respective masks
-root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/ms/m3m-ms_tile'
+root_image_folder = r'/home/amarasi5/hpc/tsa/tsa_model_training/sensors_for_modelling/rgb/m3e_tile'
 
 # Count the number of vegetation indices only when apply_veg_indices is True
 num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_veg_indices else 0
@@ -136,15 +91,14 @@ num_veg_indices = calculate_veg_indices(np.zeros((1, 1, 27))).shape[2] if apply_
 config_str = (
     f'tile_[{tile_size}]_o.lap_[{overlap_percentage}]_t.size_[{test_size}]_'
     f'b.size_[{batch_size}]_epochs_[{epochs}]_vis_[{apply_veg_indices}]_num_vi_[{num_veg_indices}]_'
-    f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_'
     f'd._bands_{deleted_bands}_l.rate_[{learning_rate}]'
 ) if delete_bands else (
     f'tile_[{tile_size}]_o.lap_[{overlap_percentage}]_t.size_[{test_size}]_'
     f'b.size_[{batch_size}]_epochs_[{epochs}]_vis_[{apply_veg_indices}]_num_vi_[{num_veg_indices}]_'
-    f'gau_[{apply_gaussian}]_mean_[{apply_mean}]_con_[{apply_convolution}]_del_band[false]_l.rate_[{learning_rate}]'
+    f'del_band[false]_l.rate_[{learning_rate}]'
 )
 
-root_model_folder = os.path.join(root_image_folder, f'tsa_unet_train_ms_model&outcomes_{config_str}')
+root_model_folder = os.path.join(root_image_folder, f'tsa_unet_train_rgb_model&outcomes_{config_str}')
 #----------------------------------------------------------------------#
 # Load unet model
 unet_model = load_model(os.path.join(root_model_folder,'unet_save_best_model.keras'))
@@ -164,7 +118,7 @@ def get_image_dimensions(file_path):
     return None, None
 
 # Specify the folder paths for images and masks
-image_folder_path = os.path.join(root_image_folder, 'ms_rois/testing')
+image_folder_path = os.path.join(root_image_folder, 'rgb_rois/testing')
 mask_folder_path = os.path.join(root_image_folder, 'mask_rois/testing')
 
 # Minimum width and height for filtering
@@ -177,7 +131,7 @@ max_height = 20000
 filtered_image_files = []
 filtered_mask_files = []
 
-input_img_folder = os.path.join(root_image_folder, 'ms_rois/testing')
+input_img_folder = os.path.join(root_image_folder, 'rgb_rois/testing')
 input_mask_folder = os.path.join(root_image_folder, 'mask_rois/testing')
 
 img_files = [file for file in os.listdir(input_img_folder) if file.endswith(".tif")]
@@ -231,10 +185,10 @@ for i in range(len(filtered_image_files)):
             y_end = y_start + tile_size
 
             # Extract the image tile
-            input_bands = 4  # Number of input bands
+            input_bands = 3  # Number of input bands
             input_img = np.array([ds_img.GetRasterBand(j + 1).ReadAsArray(x_start, y_start, tile_size, tile_size) for j in range(input_bands)])
             input_img = np.transpose(input_img, (1, 2, 0))
-            input_img = exposure.equalize_hist(input_img)
+            #input_img = exposure.equalize_hist(input_img) # if necessary
             
             if apply_veg_indices:
                 veg_indices = calculate_veg_indices(input_img)
@@ -243,26 +197,9 @@ for i in range(len(filtered_image_files)):
             if delete_bands:
                 input_img = np.delete(input_img, deleted_bands, axis=2)
 
-            if apply_convolution:
-                for c in range(input_img.shape[2]):
-                    input_img[:, :, c] = convolve(input_img[:, :, c], kernel)
-            
-            if apply_gaussian:
-                input_img = apply_gaussian_blur(input_img)
-
-            if apply_mean:
-                input_img = apply_mean_filter(input_img)
-
             input_mask = ds_mask.GetRasterBand(1).ReadAsArray(x_start, y_start, tile_size, tile_size).astype(int)
            
-            #image_patches.append(input_img)
-            # Min-Max normalize the image tile per channel
-            input_img_min = input_img.min(axis=(0, 1), keepdims=True)
-            input_img_max = input_img.max(axis=(0, 1), keepdims=True)
-            input_img = (input_img - input_img_min) / (input_img_max - input_img_min + 1e-8)  # add epsilon to avoid division by zero
-
-            image_patches.append(input_img.astype(np.float32))
-
+            image_patches.append(input_img)
             mask_patches.append(input_mask)
 
     print(f"Processed image: {img_file} --> Processed mask: {mask_file}")
