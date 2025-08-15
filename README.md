@@ -28,11 +28,8 @@ TSA-DRONE-AI-DETECTION/
 │   ├── README.md              # Docs overview
 │   ├── results.md             # Performance results, tables, and figures
 │
-├── ground_truth_labelling/
-│   └── README.md              # Ground truth data preparation process
-│
 ├── image_annotation/
-│   ├── README.md
+│   ├── README.md              # Ground truth data preparation process
 │   ├── Using_QGIS_for_Annotation.md
 │
 ├── machine_learning_scripts/
