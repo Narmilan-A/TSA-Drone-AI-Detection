@@ -8,15 +8,14 @@ This repository contains the complete code, documentation, dataset links, and in
 
 The project was developed as part of field campaigns across Northern New South Wales (2023–2025) and includes:
 
-- **High-resolution UAV imagery** from multiple sensors  
-- **Manual ground-truth labelling** using QGIS and ArcGIS Pro  
-- **Preprocessing workflows** for orthomosaics, ROIs, and annotations  
+- **High-resolution drone imagery** from multiple sensors  
+- **Manual ground-truth labelling** using QGIS
+- **Preprocessing workflows** for orthomosaics, region of interests (ROIs), and annotations  
 - **ML/DL training scripts** for RGB, MS, and HS imagery  
 - **Model performance evaluations** with precision, recall, and F1-scores  
 - **Setup instructions** for Colab, local GPU machines, and HPC environments
 
 <img width="1757" height="476" alt="image" src="https://github.com/user-attachments/assets/07aae30d-5239-423d-9972-53792d432c0d" />
-
 
 ## Repository Structure
 ```
