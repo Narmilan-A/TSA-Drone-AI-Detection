@@ -7,6 +7,34 @@ The dataset is hosted on the MS Teams shared drive:
 [Access the TSA Dataset](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy)
 
 ---
+## Naming Conventions
+
+### Seasons
+- `oct-24` → October 2024  
+- `apr-23` → April 2023  
+- `jan-25` → January 2025  
+- `nov-23` → November 2023  
+
+### RGB Sensors
+- `sony` → Sony RGB UAV  
+- `fuji` → Fuji RGB UAV  
+- `p1` → DJI Phantom 1 UAV  
+- `phase1` → Phase One RGB UAV  
+- `m3e` → M300 + RGB camera (M3E)  
+- `m3m-rgb` → M300 + Multispectral camera (RGB bands only)  
+
+### MS Sensors
+- `altum` → Micasense Altum multispectral UAV sensor  
+- `rededge-p` → Micasense RedEdge-P multispectral UAV sensor  
+- `m3m-ms` → M300 UAV + multispectral camera (MS bands)  
+
+### HS Sensors
+- `afx` → AFX hyperspectral sensor  
+
+### Tiles vs Original
+- `_tile` → cropped ROI tiles for model training/testing  
+- Non-tile → original ROI folders for reference or annotation
+---
 
 ## Folder Structure
 
