@@ -16,17 +16,17 @@ The dataset is hosted on the MS Teams shared drive:
 - `nov-23` → November 2023  
 
 ### RGB Sensors
-- `sony` → Sony RGB UAV  
-- `fuji` → Fuji RGB UAV  
-- `p1` → DJI Phantom 1 UAV  
-- `phase1` → Phase One RGB UAV  
-- `m3e` → M300 + RGB camera (M3E)  
-- `m3m-rgb` → M300 + Multispectral camera (RGB bands only)  
+- `sony` → Sony  
+- `fuji` → Fuji   
+- `p1` → DJI Phantom 1  
+- `phase1` → Phase One  
+- `m3e` → DJI Mavic 3 Enterprise
+- `m3m-rgb` → DJI Mavic 3 Multispectral  
 
 ### MS Sensors
-- `altum` → Micasense Altum multispectral UAV sensor  
-- `rededge-p` → Micasense RedEdge-P multispectral UAV sensor  
-- `m3m-ms` → M300 UAV + multispectral camera (MS bands)  
+- `altum` → Micasense Altum  
+- `rededge-p` → Micasense RedEdge-P
+- `m3m-ms` → DJI Mavic 3 Multispectral
 
 ### HS Sensors
 - `afx` → AFX hyperspectral sensor  
