@@ -11,7 +11,7 @@ The project was developed as part of field campaigns across Northern New South W
 - **Model performance evaluations** with precision, recall, and F1-scores.
 - **Setup instructions** for Colab, local GPU machines, and HPC environments.
 
-<table style="border:none;">
+<table style="border: 0; border-color: white;">
   <tr>
     <td align="center" style="border:none;">
       <img src="https://github.com/user-attachments/assets/93805d54-3d3d-4ad6-a7c4-9cef46f90f29"
