@@ -61,10 +61,6 @@ Follow the relevant guide from `setup_instructions/`:
 - **Local GPU:** `Local_Machine_Setup.md`
 - **HPC:** `HPC_Setup.md`
 
-Or use Conda:
-```bash
-conda env create -f setup_instructions/environment_windows_gpu.yml
-conda activate tsa-detection
 ```
 
 ---
