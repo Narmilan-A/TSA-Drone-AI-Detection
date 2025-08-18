@@ -89,16 +89,30 @@ For questions, data access, or collaboration:
 - **Remy Dehaan** — <rdehaan@csu.edu.au>
 ---
 
-## Citation
+## How to Cite the Dataset
 
-If you use this dataset or related work in your research, please cite:
+```
+@misc{tsa_dataset_2025,
+  title        = {TSA Drone Imagery and Annotations (RGB, Multispectral, Hyperspectral), Northern NSW, 2023--2025},
+  author       = {Amarasingam, Narmilan and Dehaan, Remy and collaborators},
+  year         = {2025},
+  organization = {Charles Sturt University},
+  howpublished = {MS Teams SharePoint (project shared site)},
+  url          = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
+  note         = {UAV imagery, labels, and metadata for TSA detection}
+}
 
-@misc{tsa_drone_ai_detection,
+```
+## How to Cite the Technical Report
+```
+@techreport{tsa_report_2025,
   title        = {Development of Drone Detection Technology to Enhance Tropical Soda Apple (TSA) Control in Rugged High-Value Grazing Country in Northern NSW},
   author       = {Amarasingam, Narmilan and Dehaan, Remy and collaborators},
   year         = {2025},
-  organization = {Charles Sturt University},      % or: institution = {Charles Sturt University}
-  url          = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
+  institution  = {Charles Sturt University},
+  type         = {Project Technical Report},
+  url          = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection/reports/final_report_v2?csf=1&web=1&e=wcVE5a},
   note         = {MS Teams SharePoint repository}
 }
 
+```
