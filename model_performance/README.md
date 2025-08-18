@@ -1,17 +1,9 @@
 # Model Performance – Quick Overview
 
-This README summarizes where to find evaluation outputs (reports, plots, and predictions) produced by the HS/MS/RGB training runs.
+This README summarises where to find evaluation outputs (reports, plots, and predictions) produced by the HS/MS/RGB training runs.
 
 ## OneDrive Access (add your link)
 **Primary OneDrive folder**: [Open in OneDrive](PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE)
-
-> Replace the placeholder with your actual OneDrive sharing URL.
-
-### How to get your OneDrive sharing link
-1. Open your **OneDrive** (web or desktop) and navigate to the **model performance** folder you want to share.
-2. Right‑click the folder → **Share** (or **Copy link**).
-3. Make sure the permissions are set the way you want (e.g., **Anyone with the link can view**).
-4. Click **Copy link**, then paste it here to replace `PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE`.
 
 ---
 
@@ -27,11 +19,6 @@ This README summarizes where to find evaluation outputs (reports, plots, and pre
 If you keep multiple experiments, each run will create its own timestamped/config‑encoded directory under the corresponding sensor root.
 
 ---
-
-## Notes
-- HS results may include class‑imbalance handling (pixel weighting or focal loss); check notes in the corresponding training script for the exact settings.
-- Predictions are aligned to source tiles; mosaicking is optional and can be done in GIS or with a raster merge tool.
-- For reproducibility, store the `selected_bands_indices.txt` and the training config string alongside each run’s outputs.
 
 # Model Performance & Artifacts — Overview
 
@@ -119,31 +106,6 @@ This README describes **what each file/folder contains** in your *model performa
 4. **If class imbalance is severe**, track `FalseNegatives.png` to ensure recall for *tsa* is improving.  
 5. **Inspect predictions** (`*_pred.tif`) overlayed in QGIS on the source imagery to validate spatial patterns.  
 6. **Use `unet_training_history.csv`** to compute any custom metric or to aggregate multiple runs in a spreadsheet.
-
----
-
-## 7) Quick FAQs
-
-- **Where is the model I should deploy?**  
-  The best U‑Net checkpoint file: `unet_best_model.keras` (or `unet_save_best_model.keras`).
-
-- **Where do I find test metrics?**  
-  - Hyperspectral: `hs/hs_test_results/…`  
-  - Others: look for files named `unet_model_testing_performance_report.txt` and `unet_cm_heatmap_testing.png` next to the best model.
-
-- **Where are the GIS‑ready outputs?**  
-  In each dataset’s prediction subfolder (`…/tif/` and/or `…/envi/`).
-
-- **How can I reproduce/trace a run?**  
-  Use `dataset_audit.csv`, the `…shapes.txt` files, and the config/paths embedded in the folder name plus the training history CSV.
-
----
-
-## 8) Suggested next steps (optional)
-
-- Log **class weights** or sampling strategy used, alongside metrics, when running heavily imbalanced tasks (e.g., *tsa* minority).  
-- Save **thresholded confusion matrices** for several probability cutoffs if the operating point matters for field decisions.  
-- Add a small **`README_run.md`** into each run folder with key hyper‑parameters (tile size, overlap, bands, HE on/off, class weights).
 
 ---
 
