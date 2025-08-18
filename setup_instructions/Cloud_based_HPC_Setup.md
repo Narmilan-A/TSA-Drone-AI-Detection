@@ -11,9 +11,7 @@ It is general enough to apply to most university or research HPC clusters.
 3. [Conda Environment Setup](#conda-environment-setup)
 4. [GPU and CUDA Setup](#gpu-and-cuda-setup)
 5. [Submitting Jobs](#submitting-jobs)
-6. [Monitoring Resources](#monitoring-resources)
-7. [Useful Linux Commands](#useful-linux-commands)
-8. [References & Links](#references--links)
+6. [References & Links](#references--links)
 
 ---
 
