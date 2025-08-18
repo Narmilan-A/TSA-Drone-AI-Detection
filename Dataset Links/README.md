@@ -122,7 +122,7 @@ Contains **RGB, MS, and HS data** processed into regions of interest for model t
 Contains preprocessing and analysis scripts for **RGB, MS, HS**, and utility scripts for dataset info extraction.
 
 ### 4. sensors_model_performance
-Contains model predictions and evaluation outputs for **RGB and MS sensors**, organized per sensor.
+Contains model predictions and evaluation outputs for **RGB and MS sensors**, organised per sensor.
 
 ---
 
@@ -135,5 +135,13 @@ Contains model predictions and evaluation outputs for **RGB and MS sensors**, or
 ---
 
 ## Citation
-**If you use this dataset in publications, please cite**: Amarasingam, N., & Dehaan, R. (2025). Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW. Charles Sturt University.
+```
+@data{TSA-Drone-AI-Detection,
+  url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
+  author = {Amarasingam, N., & Dehaan, R and collaborators},
+  publisher = {Charles Sturt University / MS Teams Shared Drive},
+  title = {Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW},
+  year = {2025}
+}
+```
 
