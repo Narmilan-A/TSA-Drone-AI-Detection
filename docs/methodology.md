@@ -1,4 +1,4 @@
-# Methodology
+# TSA Detection - Processing Pipeline
 
 ## Data Collection
 UAV data was collected from 11 sites over 4 seasonal campaigns between 2023–2025 using DJI Matrice 300, DJI Matrice 600, and Mavic 3 Multispectral UAVs, equipped with RGB, multispectral, and hyperspectral sensors.
