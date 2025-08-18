@@ -1,4 +1,4 @@
-# TSA-Drone-AI-Detection
+# Hyperspectral model training using classical machine learning
 
 Train, test, and predict TSA vs Background from hyperspectral imagery using four models: **RandomForest, XGBoost, SVM, KNN**. Fully driven by `config/config.yaml`.
 
