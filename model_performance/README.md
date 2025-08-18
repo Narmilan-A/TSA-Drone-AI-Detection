@@ -1,124 +1,151 @@
-# Model Performance Guide
+# Model Performance – Quick Overview
 
-This README documents how to read, compare, and report performance for the U‑Net models in this repo (HS / MS / RGB). It is **code‑free** and focuses on what the metrics mean, where to find them, and how to summarize results clearly.
+This README summarizes where to find evaluation outputs (reports, plots, and predictions) produced by the HS/MS/RGB training runs.
 
-## 1) Scope and Terminology
+## OneDrive Access (add your link)
+**Primary OneDrive folder**: [Open in OneDrive](PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE)
 
-- **tsa**: target class of interest (e.g., trees/shrubs).
-- **bg**: background class.
-- **Unlabeled (0)**: pixels to ignore in training/eval for the HS setup with sparse masks.
-- **Pixel‑level metrics**: all metrics here are computed per pixel unless otherwise stated.
-- **Tiles**: fixed‑size windows cut from rasters; predictions and metrics are aggregated over tiles.
+> Replace the placeholder with your actual OneDrive sharing URL.
 
-## 2) Datasets & Labels
-
-- **Binary setup (2 classes)**: `bg=0, tsa=1` (or vice‑versa as specified per script). Metrics and confusion matrix cover both classes.
-- **Sparse 3‑label masks (ignore class 0)**: masks contain `{0: unlabeled, 1: tsa, 2: bg}`. Training and reporting **ignore 0** and evaluate only classes **1 (tsa)** and **2 (bg)**.
-
-> Tip: When reporting, always state which label scheme you used and whether class 0 was ignored.
-
-## 3) Splits & Reproducibility
-
-- Typical split is **train/val** (e.g., 80/20) inside the training script, and an optional **held‑out test** split for final reporting.
-- Scripts set a fixed random seed for split and model init, so results are reproducible given the same data, tile parameters, and preprocessing (e.g., histogram equalization on/off).
-
-## 4) Reported Metrics (what you will see)
-
-**From training/validation (saved under each run folder):**
-- **Loss**: cross‑entropy on the chosen label scheme.
-- **BinaryAccuracy** (binary) or general accuracy (multiclass).
-- **Precision/Recall for TSA**: precision answers “when the model predicts tsa, how often is it correct?”; recall answers “how much of the true tsa was found?”
-- **IoU (class=tsa)**: intersection‑over‑union for the target class.
-- **MeanIoU**: average IoU across evaluated classes (excludes the ignored class 0 when applicable).
-- **Confusion Matrix**: counts of predicted vs true pixels. Saved as a heatmap image and printed as a table.
-- **Classification Report**: precision, recall, F1 for each class plus macro/weighted averages.
-- **Training Curves**: CSV (`unet_training_history.csv`) and PNG plots for loss and metrics.
-
-**From test evaluation (optional test script):**
-- Confusion matrix, classification report, and IoU per class on the held‑out test tiles.
-- A plain‑text performance report saved alongside plots.
-
-## 5) Where to Find the Outputs
-
-Each training run creates an outcome folder like:
-
-```
-<root>/tsa_unet_train_*_model&outcomes_*   (exact name encodes tile size, overlap, lr, epochs, etc.)
-```
-
-Common files inside a run directory:
-
-- **`unet_best_model.keras`**: best model by validation loss (Keras v3 format).
-- **`log/weights.*.weights.h5`**: checkpointed weights across epochs.
-- **`unet_cm_heatmap_val.png`**: validation confusion matrix heatmap.
-- **`unet_val_report.txt`**: validation confusion matrix + classification report + training time.
-- **`unet_training_history.csv`**: per‑epoch metrics and loss.
-- **`dataset_audit.csv`**: exactly which images/masks were used and why any were skipped.
-
-Test‑time (if you run the test script):
-- **`hs_test_results/unet_cm_heatmap_testing.png`** and **`unet_model_testing_performance_report.txt`** (or similar for MS/RGB).
-
-## 6) Interpreting the Numbers (especially with class imbalance)
-
-When **background massively outnumbers tsa**, overall accuracy can be misleadingly high. Prioritize:
-
-- **Recall (tsa)**: ability to capture tsa pixels (misses are costly if tsa is the target).
-- **Precision (tsa)**: fraction of predicted tsa that is truly tsa (controls false alarms).
-- **IoU (tsa)**: balances overlap between prediction and ground truth for the target class.
-
-If you see high accuracy but **very low tsa recall**, the model is ignoring tsa. Consider balancing strategies (below).
-
-## 7) Class Imbalance: What to Report and How to Address
-
-**What to report**
-- Class distribution (percentage of tsa vs bg pixels) in the *used* tiles (after filtering and tiling).
-- **Precision/Recall/IoU for tsa** prominently. Include confusion matrix to show error modes.
-- Macro vs weighted averages (macro is less biased by the dominant class).
-
-**What you can adjust in training (qualitatively)**
-- **Pixel weights** (e.g., up‑weight tsa in the loss). Increasing the tsa weight pushes the model to find more tsa (boosting recall), but may lower precision if set too high.
-- **Tile rebalancing**: oversample tiles containing tsa.
-- **Threshold tuning**: after softmax/sigmoid outputs, adjust the decision threshold for tsa if needed.
-- **Augmentation**: class‑aware augmentations that preserve minority patterns.
-
-> Always document the chosen weights/thresholds so others can reproduce the reported numbers.
-
-## 8) Recommended Primary Table (per run)
-
-Fill once training/validation and test are complete:
-
-| Run ID | Data (HS/MS/RGB) | Tile Size | Bands Used | HE/CLAHE | Train/Val Split | TSA Prec | TSA Recall | TSA IoU | Mean IoU | Val Acc | Test TSA IoU | Notes |
-|---|---|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---|
-
-Notes can include pixel weights, overlap %, learning rate, and any preprocessing flags.
-
-## 9) Quality Checks You Can Cite
-
-- **`dataset_audit.csv`** lists each image/mask pair and reasons for any skips (size mismatch, open failure, image smaller than tile, etc.).
-- **Pairing rule** is by a normalized `roi_<n>_tile_<m>` key; mask filenames can have a `mask_` prefix but must share the same key.
-- **Selected Bands**: if using HS selected bands, the indices must match the source rasters; mismatches can degrade performance.
-
-## 10) Known Pitfalls to Mention in Reports
-
-- **Invalid rasters after copying**: zero‑filled `.tif` on network shares cause “not a TIFF file b'\x00\x00\x00\x00'”. Verify with `gdalinfo` before training.
-- **Histogram Equalization changes the distribution**: keep the same setting (on/off) between training and inference or expect drift.
-- **Tile geometry must match model**: tile size, overlap, and band count must be consistent across train/test/predict scripts.
-- **Ignored class 0**: for sparse masks, always state that unlabeled pixels were excluded from loss/metrics.
-
-## 11) Changelog (example template)
-
-- YY‑MM‑DD — HS, 64×64, selected‑bands N=20, HE=on (hist), lr=1e‑3, epochs=200. TSA Recall 0.62, TSA IoU 0.48, MeanIoU 0.66. Pixel weights TSA:BG = 2:1.
-- YY‑MM‑DD — MS, 128×128, 4 bands + indices, HE=off, lr=1e‑3, epochs=120. TSA Recall 0.54, TSA IoU 0.41. Oversampled tsa tiles ×2.
-
-## 12) Glossary
-
-- **Precision (tsa)**: TP / (TP + FP) for the tsa class.
-- **Recall (tsa)**: TP / (TP + FN) for the tsa class.
-- **IoU (tsa)**: TP / (TP + FP + FN) for the tsa class.
-- **Macro avg**: arithmetic average across classes, insensitive to class imbalance.
-- **Weighted avg**: average weighted by class support (may be dominated by bg).
-- **Val/Test**: validation is used for model selection; test is held‑out for final reporting.
+### How to get your OneDrive sharing link
+1. Open your **OneDrive** (web or desktop) and navigate to the **model performance** folder you want to share.
+2. Right‑click the folder → **Share** (or **Copy link**).
+3. Make sure the permissions are set the way you want (e.g., **Anyone with the link can view**).
+4. Click **Copy link**, then paste it here to replace `PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE`.
 
 ---
 
-**Bottom line**: emphasize **tsa recall** and **tsa IoU**, include the confusion matrix, and document any balancing strategies used. Keep preprocessing and tile configuration consistent between training and evaluation for numbers that truly compare.
+## What’s inside (typical)
+- `hs/hs_test_results/` – Validation/test confusion matrix heatmaps, classification reports, and IoU summaries.
+- `hs/hs_unet_predictions/` – GIS‑ready per‑tile predictions in **GeoTIFF** and **ENVI** (`.dat/.hdr`).
+- `*/tsa_unet_train_*_model&outcomes_*/` – Per‑experiment folders containing:
+  - `unet_best_model.keras` (Keras v3 format) and periodic `*.weights.h5` checkpoints.
+  - `unet_training_history.csv` and plots: `Accuracy.png`, `Loss.png`, `IoU.png`, etc.
+  - `unet_cm_heatmap_val.png` and `unet_val_report.txt` (confusion matrix & classification report).
+  - `dataset_audit.csv` showing which image/mask pairs and tiles were used.
+
+If you keep multiple experiments, each run will create its own timestamped/config‑encoded directory under the corresponding sensor root.
+
+---
+
+## Notes
+- HS results may include class‑imbalance handling (pixel weighting or focal loss); check notes in the corresponding training script for the exact settings.
+- Predictions are aligned to source tiles; mosaicking is optional and can be done in GIS or with a raster merge tool.
+- For reproducibility, store the `selected_bands_indices.txt` and the training config string alongside each run’s outputs.
+
+# Model Performance & Artifacts — Overview
+
+This README describes **what each file/folder contains** in your *model performance* dump, and how to use the artifacts to review and compare experiments. It’s written to match the current layout you shared (hyperspectral **hs**, multispectral **ms**, and RGB **rgb**).
+
+---
+
+## 1) Top-level layout
+
+- `hs/` – Hyperspectral U-Net runs and predictions  
+- `ms/` – Multispectral experiments  
+  - `altum/` – U-Net run + an **XGBoost** baseline (`xgb_altum_model&outcomes_1/`)  
+  - `m3m-ms/` – U-Net run (train/val + test artifacts)  
+  - `rededge-p/` – U-Net run + an **XGBoost** baseline (`xgb_rededge-p_model&outcomes_1/`)  
+- `rgb/fuji/` – RGB U-Net run (train/val + test artifacts)  
+
+> The structure is consistent: each dataset has a U-Net run (images, CSV, text reports) and some datasets also have classical ML baselines (XGBoost) for comparison.
+
+---
+
+## 2) Common U‑Net artifacts (appear in most model folders)
+
+- **`unet_save_best_model.keras` / `unet_best_model.keras`**  
+  The best checkpoint saved in the Keras v3 format. Use `keras.models.load_model(...)` to load for inference.
+  
+- **`unet_training_history.csv`**  
+  Per‑epoch training & validation metrics (loss, accuracy, precision/recall, IoU, FN/FP). Useful for plotting custom charts or performing comparisons across runs.
+
+- **Metric plots (PNGs)**  
+  - `Accuracy.png` — Train/val accuracy per epoch.  
+  - `Loss.png` — Train/val loss per epoch.  
+  - `Precision.png`, `Recall.png` — Class‑specific behavior over training.  
+  - `IoU.png` — (when present) Intersection‑over‑Union curve(s).  
+  - `FalseNegatives.png`, `FalsePositives.png` — Helpful for class imbalance diagnostics.
+
+- **Confusion matrix & report (validation)**  
+  - `unet_cm_heatmap_val.png` — Heatmap of the validation confusion matrix.  
+  - `unet_val_report.txt` or `unet_model_training_&_validation_performance_report.txt` — Detailed classification report (precision, recall, F1) alongside the confusion matrix.
+
+- **Dataset bookkeeping**  
+  - `dataset_audit.csv` — Reasons any tiles were skipped, and tile counts per image/mask pair.  
+  - `unet_train_val_shapes.txt` / `unet_training_and_validation samples.txt` — Input shapes used, for reproducibility and quick checks.
+
+---
+
+## 3) Hyperspectral (**hs**) extras
+
+- **Testing artifacts** (`hs/hs_test_results/`)  
+  - `unet_cm_heatmap_testing.png` — Confusion matrix on the **held‑out test** tiles.  
+  - `unet_model_testing_performance_report.txt` — Classification report for test tiles.  
+  - `unet_testing_samples.txt` — Summary (counts/shapes) of the test dataset.
+
+- **Predictions export** (`hs/hs_unet_predictions/`)  
+  - `tif/` — GeoTIFF rasters of model predictions per ROI/tile (`*_pred.tif`).  
+  - `envi/` — ENVI pair (`.hdr` + `.dat`) for the same predictions.  
+  These are per‑tile probability/logit/label rasters (depending on the exporter used). They’re ready for GIS inspection (QGIS/ENVI).
+
+---
+
+## 4) Multispectral (**ms**) notes
+
+- **`altum/` and `rededge-p/`** include **XGBoost** baselines:  
+  - `best_xgb_model.pkl` — Serialized XGB model (load with `pickle` or `joblib`).  
+  - `xgb_cr&cm_validation.txt`, `xgb_cm_heatmap_validation.png` — Validation metrics.  
+  - `xgb_cr&cm_testing.txt`, `xgb_cm_heatmap_testing.png` — Held‑out test metrics.
+
+- **`m3m-ms/`** follows the standard U‑Net pattern and includes **training** (`…training_&_validation_performance_report.txt`) and **testing** (`unet_model_testing_performance_report.txt`) reports plus confusion matrices for both.
+
+> Use these baselines to cross‑check if the deep model is over/under‑performing a simple learner on the same features.
+
+---
+
+## 5) RGB (**rgb/fuji**) notes
+
+- Contains both **train/validation** and **test** reports/plots like the MS runs.  
+- Also includes a `unet_prediction_rois/` folder with per‑ROI/tile predictions exported to **.tif** and **ENVI** formats for GIS evaluation.
+
+---
+
+## 6) How to read & compare runs
+
+1. **Start with the PNGs** (`Accuracy.png`, `Loss.png`) to spot over/under‑fitting.  
+2. **Open the confusion matrix** for val/test to see dominant error types.  
+3. **Read the classification reports** for precision/recall/F1 (especially for your minority class *tsa*).  
+4. **If class imbalance is severe**, track `FalseNegatives.png` to ensure recall for *tsa* is improving.  
+5. **Inspect predictions** (`*_pred.tif`) overlayed in QGIS on the source imagery to validate spatial patterns.  
+6. **Use `unet_training_history.csv`** to compute any custom metric or to aggregate multiple runs in a spreadsheet.
+
+---
+
+## 7) Quick FAQs
+
+- **Where is the model I should deploy?**  
+  The best U‑Net checkpoint file: `unet_best_model.keras` (or `unet_save_best_model.keras`).
+
+- **Where do I find test metrics?**  
+  - Hyperspectral: `hs/hs_test_results/…`  
+  - Others: look for files named `unet_model_testing_performance_report.txt` and `unet_cm_heatmap_testing.png` next to the best model.
+
+- **Where are the GIS‑ready outputs?**  
+  In each dataset’s prediction subfolder (`…/tif/` and/or `…/envi/`).
+
+- **How can I reproduce/trace a run?**  
+  Use `dataset_audit.csv`, the `…shapes.txt` files, and the config/paths embedded in the folder name plus the training history CSV.
+
+---
+
+## 8) Suggested next steps (optional)
+
+- Log **class weights** or sampling strategy used, alongside metrics, when running heavily imbalanced tasks (e.g., *tsa* minority).  
+- Save **thresholded confusion matrices** for several probability cutoffs if the operating point matters for field decisions.  
+- Add a small **`README_run.md`** into each run folder with key hyper‑parameters (tile size, overlap, bands, HE on/off, class weights).
+
+---
+
+**Last updated:** this file describes the artifacts currently present and will remain valid as long as the layout stays consistent.
+
