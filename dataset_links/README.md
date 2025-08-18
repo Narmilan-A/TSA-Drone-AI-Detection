@@ -1,10 +1,35 @@
-# TSA Drone AI Detection Dataset
-
 ## Dataset Overview
-This dataset contains drone-acquired imagery and annotations for **Tropical Soda Apple (TSA)** detection in Northern New South Wales. It was collected during field campaigns (2023–2025) and is intended for training and evaluating **machine learning (ML)** and **deep learning (DL)** models for weed detection.  
 
-The dataset is hosted on the MS Teams shared drive:  
-[Access the TSA Dataset](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy)
+This dataset contains drone-acquired imagery and annotations for **Tropical Soda Apple (TSA)** detection in Northern New South Wales. It was collected during field campaigns (2023–2025) and is intended for training and evaluating **machine learning (ML)** and **deep learning (DL)** models for weed detection.
+
+**Location (MS Teams / SharePoint):**  
+[Open in SharePoint](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy)
+
+---
+
+### How to Access (CSU staff/students)
+
+1. **Sign in with CSU credentials**
+   - When prompted, choose **Work or school account** and complete MFA if asked.
+2. **Open the link above**
+   - You will land in the **RSRCH-WeedDataShared → Shared Documents → General → TSA-Drone-AI-Detection** library.
+3. **If you see “Request access”**
+   - Click **Request access** and wait for approval from the library owners (Team: *RSRCH-WeedDataShared*).
+4. **(Recommended) Sync for large downloads**
+   - Click **Sync** (top toolbar) to add the library to your local **OneDrive**. This avoids browser timeouts on multi-GB rasters.
+   - Alternatively use **Add shortcut to OneDrive** for quick access from your OneDrive folder.
+5. **Download options**
+   - **Single files**: Select → **Download**.
+   - **Folders**: Select the folder → **Download** (zip) or use OneDrive sync (preferred for big folders).
+
+---
+
+### Tips & Troubleshooting
+
+- **Can’t open the link?** Make sure you’re logged into the CSU tenant in your browser (Chrome/Edge) and not a personal Microsoft account.
+- **Permission denied / 404**: Use **Request access** on the page or ask your project lead to add you to the *RSRCH-WeedDataShared* Team.
+- **Very large files**: Prefer OneDrive **Sync** over direct browser download.
+- **Long paths on Windows**: Move/sync to a short local path (e.g., `C:\data\tsa`) to avoid path-length issues.
 
 ---
 ## Naming Conventions
