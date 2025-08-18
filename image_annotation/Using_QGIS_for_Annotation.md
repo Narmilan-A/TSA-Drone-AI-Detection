@@ -69,8 +69,3 @@ Once toolbars are enabled, proceed with annotation:
 This coloring improves visualization and helps easily distinguish vegetation classes while annotating.
 
 ---
-<div style="text-align: right;">
-  <a href="Activity_08_Using_ArcGIS_Pro_for_Annotation.md" style="background-color:#4CAF50; color:white; padding:6px 12px; text-decoration:none; border-radius:4px;">
-    Next ➡
-  </a>
-</div>
