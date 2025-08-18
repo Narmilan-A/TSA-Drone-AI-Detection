@@ -22,7 +22,7 @@ If you keep multiple experiments, each run will create its own timestamped/confi
 
 # Model Performance & Artifacts — Overview
 
-This README describes **what each file/folder contains** in your *model performance* dump, and how to use the artifacts to review and compare experiments. It’s written to match the current layout you shared (hyperspectral **hs**, multispectral **ms**, and RGB **rgb**).
+This README describes **what each file/folder contains** in your *model performance* dump, and how to use the artifacts to review and compare experiments. It’s written to match the current layout you shared (hyperspectral **(hs)**, multispectral **(ms)**, and RGB **(rgb)**).
 
 ---
 
