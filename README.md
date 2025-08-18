@@ -72,7 +72,7 @@ Follow the relevant guide from `setup_instructions/`:
 ---
 
 ## Results
-Detailed performance metrics and evaluation results are available in `docs/results.md`.
+Detailed performance metrics and evaluation results are available in `model_performance/README.md`.
 <img width="1932" height="820" alt="image" src="https://github.com/user-attachments/assets/838b75a2-7570-4d0c-9df8-ae661abcaccf" />
 
 
