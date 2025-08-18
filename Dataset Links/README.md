@@ -1,7 +1,7 @@
 # TSA Drone AI Detection Dataset
 
 ## Dataset Overview
-This dataset contains UAV-acquired imagery and annotations for **Tropical Soda Apple (TSA)** detection in Northern New South Wales. It was collected during field campaigns (2023–2025) and is intended for training and evaluating **machine learning (ML)** and **deep learning (DL)** models for weed detection.  
+This dataset contains drone-acquired imagery and annotations for **Tropical Soda Apple (TSA)** detection in Northern New South Wales. It was collected during field campaigns (2023–2025) and is intended for training and evaluating **machine learning (ML)** and **deep learning (DL)** models for weed detection.  
 
 The dataset is hosted on the MS Teams shared drive:  
 [Access the TSA Dataset](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy)
@@ -23,12 +23,12 @@ The dataset is hosted on the MS Teams shared drive:
 - `m3e` → DJI Mavic 3 Enterprise
 - `m3m-rgb` → DJI Mavic 3 Multispectral  
 
-### MS Sensors
+### Multispectral (MS) Sensors
 - `altum` → Micasense Altum  
 - `rededge-p` → Micasense RedEdge-P
 - `m3m-ms` → DJI Mavic 3 Multispectral
 
-### HS Sensors
+### Hyperspectral (HS) Sensors
 - `afx` → Specim AFX hyperspectral  
 
 ### Tiles vs Original
@@ -94,10 +94,7 @@ TSA-Drone-AI-Detection/
     └── ms/
         ├── m3m-ms/
         ├── altum/
-        │   ├── xgb_altum_model&outcomes
-        │   └── unet_altum_model&outcomes
         └── rededge-p/
-            └── xgb_rededge-p_model&outcomes
 ```
 
 ---
@@ -114,7 +111,7 @@ Contains **RGB, MS, and HS data** processed into regions of interest for model t
 - **MS sensors:** rededge-p, m3m-ms, altum  
 - **HS sensors:** afx  
 - Each sensor has:  
-  - `rgb_rois` or `ms_rois` (images for model input)  
+  - `rgb_rois` or `ms_rois` or `hs_rois` (images for model input)  
   - `mask_rois` (binary masks for training segmentation models)  
   - Subfolders: `all`, `training`, `testing`  
 
@@ -122,7 +119,7 @@ Contains **RGB, MS, and HS data** processed into regions of interest for model t
 Contains preprocessing and analysis scripts for **RGB, MS, HS**, and utility scripts for dataset info extraction.
 
 ### 4. sensors_model_performance
-Contains model predictions and evaluation outputs for **RGB and MS sensors**, organised per sensor.
+Contains model predictions and evaluation outputs for **RGB, MS, and HS sensors**, organised per sensor.
 
 ---
 
