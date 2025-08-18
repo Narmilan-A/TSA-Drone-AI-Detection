@@ -10,10 +10,9 @@ The project was developed as part of field campaigns across Northern New South W
 
 - **High-resolution drone imagery** from multiple sensors  
 - **Manual ground-truth labelling** using QGIS
-- **Preprocessing workflows** for orthomosaics, region of interests (ROIs), and annotations  
 - **ML/DL training scripts** for RGB, MS, and HS imagery  
 - **Model performance evaluations** with precision, recall, and F1-scores  
-- **Setup instructions** for Colab, local GPU machines, and HPC environments
+- **Setup instructions** for Colab, local GPU machines, and cloud-based HPC environments
 
 <img width="1757" height="476" alt="image" src="https://github.com/user-attachments/assets/07aae30d-5239-423d-9972-53792d432c0d" />
 
@@ -21,12 +20,10 @@ The project was developed as part of field campaigns across Northern New South W
 ```
 TSA-DRONE-AI-DETECTION/
 │   README.md
-│   tree_output.txt
 │
 ├── docs/
 │   ├── methodology.md        # Detailed methodology from technical report
 │   ├── README.md              # Docs overview
-│   ├── results.md             # Performance results, tables, and figures
 │
 ├── image_annotation/
 │   ├── README.md              # Ground truth data preparation process
@@ -48,6 +45,8 @@ TSA-DRONE-AI-DETECTION/
     ├── Local_Machine_Setup.md
     ├── Cloud_based_HPC_Setup.md
     ├── TensorFlow-GPU_Installation.yml
+    ├── environment_hpc.yml
+    ├── environment_local_machine.yml
     └── README.md
 ```
 
@@ -65,7 +64,7 @@ Follow the relevant guide from `setup_instructions/`:
 
 ### 2. Data Preparation
 1. Download drone imagery and ground truth data from the cloud link.
-2. Place orthomosaics and labels in the appropriate folders.
+2. Place ROIs and labels in the appropriate folders.
 3. Use ML scripts to train, validate and test for TSA detection.
 
 ---
