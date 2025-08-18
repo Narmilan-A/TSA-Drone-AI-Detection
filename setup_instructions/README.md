@@ -1,8 +1,8 @@
 # TSA Model Training — Environment Setup Overview
 
-This project can be run in three typical environments. Below is a quick intro to each, what they’re best for, and what to expect. *(No commands here—just orientation.)*
+This project can be run in three typical environments. Below is a quick intro to each, what they’re best for, and what to expect.
 
-## 1) Linux / HPC cluster
+## 1) Linux / cloud-based HPC cluster
 - **Best for:** Large training runs, multi-GPU nodes, long jobs via schedulers (SLURM, PBS).
 - **What you get:** Stable CUDA/cuDNN stack, fast I/O on shared storage, reproducible Conda modules.
 - **Notes:** Paths point to shared folders; GDAL needs system libs available; use the `.keras` model format. Copy tiles with verification to avoid zero-filled rasters on network shares.
