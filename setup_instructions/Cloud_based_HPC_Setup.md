@@ -15,7 +15,7 @@ It is general enough to apply to most university or research HPC clusters.
 
 ---
 
-## 🔑 Connecting to the HPC
+## Connecting to the HPC
 
 Replace `<username>` and `<hostname.domain>` with your HPC credentials.
 
@@ -41,7 +41,7 @@ ssh <username>@<hostname.domain>
 
 ---
 
-## 📂 Mounting HPC Storage
+## Mounting HPC Storage
 
 On Linux or macOS, use SSHFS:
 
@@ -54,7 +54,7 @@ On Windows, use:
 
 ---
 
-## 🐍 Conda Environment Setup
+## Conda Environment Setup
 
 ### Step 1 – Install Miniconda
 ```bash
@@ -93,7 +93,7 @@ conda activate myenv
 
 ---
 
-## ⚡ GPU and CUDA Setup
+## GPU and CUDA Setup
 
 Check available CUDA modules:
 ```bash
@@ -112,7 +112,7 @@ python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'
 
 ---
 
-## 📝 Submitting Jobs
+## Submitting Jobs
 
 ### Interactive CPU Job
 ```bash
@@ -123,9 +123,10 @@ qsub -I -S /bin/bash -l select=1:ncpus=2:mem=8GB -l walltime=04:00:00
 ```bash
 qsub -I -S /bin/bash -l select=1:ncpus=4:mem=32g:ngpus=1:gpu_id=A100 -l walltime=12:00:00
 ```
+
 ---
 
-## 🔗 References & Links
+## References & Links
 - [Conda Environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 - [WinFsp](https://github.com/winfsp/winfsp/releases)
 - [SSHFS-Win](https://github.com/winfsp/sshfs-win)
