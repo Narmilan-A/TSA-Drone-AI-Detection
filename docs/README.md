@@ -6,7 +6,7 @@ Replace each placeholder with the actual OneDrive URL after uploading the files.
 
 **Generated:** 2025-08-18 11:42 
 
-### Submission v1 — Links (Microsoft Teams / SharePoint)
+### Submission v2 — Links (Microsoft Teams / SharePoint)
 
 All deliverables are stored in our **MS Teams SharePoint** site (CSU tenant). Access requires CSU org permissions.
 
