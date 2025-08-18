@@ -40,9 +40,9 @@ For example:
 ```python
 # Install necessary libraries
 !pip install tensorflow
-!pip install torch torchvision
 !pip install scikit-learn
 !pip install matplotlib
 !pip install pandas
 !pip install seaborn
+!pip install xgboost
 ```
