@@ -44,13 +44,12 @@ conda --version
 
 ### **Create a New Conda Environment**:
 ```bash
-conda create -n myenv python=3.10
+conda create -n tsa_env python=3.10
 ```
-Replace `myenv` with your preferred environment name.
 
 ### **Activate the Environment**:
 ```bash
-conda activate myenv
+conda activate tsa_env
 ```
 
 ### **Verify Available Environments**:
@@ -129,5 +128,3 @@ python -c "import numpy, pandas, matplotlib; print('Setup Successful!')"
 - **Conda Cheat Sheet**: [View Here](https://docs.conda.io/projects/conda/en/latest/user-guide/cheatsheet.html)
 - **Python Documentation**: [Read More](https://docs.python.org/3/)
 - **VS Code Python Guide**: [Setup Guide](https://code.visualstudio.com/docs/python/python-tutorial)
-
-Happy Coding! 🚀
