@@ -1,193 +1,190 @@
-# Working with Cloud-based High Performance Computing (Linux) – Workflow
+# 🚀 Linux HPC Workflow Guide
 
-## 1. Connecting to an HPC Host
-You can connect to a Linux-based HPC system in several ways. Replace `<username>`, `<hostname>`, and `<domain>` with the details provided by your HPC provider.  
-
-- **Method 1 – PuTTY (Windows only)**  
-  1. Install [PuTTY](https://www.putty.org/).  
-  2. In the *Host Name* field, enter:  
-     ```
-     <username>@<hostname>.<domain>
-     ```  
-  3. Click **Open**, then enter your password.  
-
-- **Method 2 – Command line (Linux/macOS/Windows Terminal)**  
-  ```bash
-  ssh <username>@<hostname>.<domain>
-  ```  
-  Then enter your password (or use SSH keys if configured).  
-
-- **Method 3 – Visual Studio Code Remote-SSH**  
-  1. Install the **Remote – SSH** extension.  
-  2. Open VS Code terminal and run:  
-     ```bash
-     ssh <username>@<hostname>.<domain>
-     ```
+This guide provides a step-by-step workflow for connecting to, setting up, and running jobs on a **Linux-based High-Performance Computing (HPC)** system.  
+It is general enough to apply to most university or research HPC clusters.
 
 ---
 
-## 2. Mounting your HPC Home Folder
-Some HPC systems allow you to mount your home or project directory as a network drive (Windows/macOS/Linux). Options include:  
-- [SSHFS](https://github.com/libfuse/sshfs) (Linux/macOS)  
-- [SSHFS-Win](https://github.com/winfsp/sshfs-win) (Windows users)  
-- [WinFsp](https://github.com/winfsp/winfsp/releases)  
+## 📑 Table of Contents
+1. [Connecting to the HPC](#connecting-to-the-hpc)
+2. [Mounting HPC Storage](#mounting-hpc-storage)
+3. [Conda Environment Setup](#conda-environment-setup)
+4. [GPU and CUDA Setup](#gpu-and-cuda-setup)
+5. [Submitting Jobs](#submitting-jobs)
+6. [Monitoring Resources](#monitoring-resources)
+7. [Useful Linux Commands](#useful-linux-commands)
+8. [References & Links](#references--links)
 
 ---
 
-## 3. Conda Setup
-### Step 1: Download Miniconda
+## 🔑 Connecting to the HPC
+
+Replace `<username>` and `<hostname.domain>` with your HPC credentials.
+
+### Method 1 – SSH (Linux / macOS / Windows Terminal)
 ```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+ssh <username>@<hostname.domain>
 ```
 
-### Step 2: Install Miniconda
+### Method 2 – PuTTY (Windows only)
+1. Install [PuTTY](https://www.putty.org/).  
+2. Enter the hostname:
+   ```
+   <username>@<hostname.domain>
+   ```
+3. Click **Open**, then login with your password or SSH key.
+
+### Method 3 – VS Code Remote SSH
+1. Install the **Remote – SSH** extension in VS Code.  
+2. Open the terminal in VS Code and connect with:
+   ```bash
+   ssh <username>@<hostname.domain>
+   ```
+
+---
+
+## 📂 Mounting HPC Storage
+
+On Linux or macOS, use SSHFS:
+
 ```bash
+sshfs <username>@<hostname.domain>:/home/<username> ~/hpc_home
+```
+
+On Windows, use:
+- [WinFsp](https://github.com/winfsp/winfsp/releases) + [SSHFS-Win](https://github.com/winfsp/sshfs-win).
+
+---
+
+## 🐍 Conda Environment Setup
+
+### Step 1 – Install Miniconda
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3
 ```
 
-### Step 3: Initialise Conda
+### Step 2 – Initialize Conda
 ```bash
 $HOME/miniconda3/bin/conda init
-```
-
-### Step 4: Update `.bashrc`
-```bash
 echo 'export PATH="$HOME/miniconda3/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Step 5: Create and Activate an Environment
+### Step 3 – Create and Activate Environment
 ```bash
-conda create --name tsa_env python=3.10 -y
-conda activate tsa_env
+conda create -n myenv python=3.10 -y
+conda activate myenv
 ```
 
-### Step 6: Install Libraries
-- TensorFlow (GPU):  
-  ```bash
-  pip install tensorflow[and-cuda]
-  ```
-- TensorFlow (CPU):  
-  ```bash
-  pip install tensorflow
-  ```
-- OpenCV:  
-  ```bash
-  pip install opencv-python opencv-python-headless
-  ```
-- Matplotlib & Seaborn:  
-  ```bash
-  pip install matplotlib seaborn
-  ```
-- scikit-image:  
-  ```bash
-  pip install scikit-image
-  ```
-- GDAL:  
-  ```bash
-  conda install -c conda-forge gdal
-  ```
-- XGBoost:  
-  ```bash
-  pip install xgboost==1.7.5
-  ```
-
-### Step 7: Using `environment.yml` (Optional)
+### Step 4 – Install Libraries
 ```bash
-conda env create -f environment.yml
+# TensorFlow (GPU version if CUDA available)
+pip install tensorflow[and-cuda]
+
+# Common libraries
+pip install opencv-python opencv-python-headless matplotlib seaborn scikit-image xgboost==1.7.5
+conda install -c conda-forge gdal
+```
+
+### Step 5 – Create from YAML (Optional)
+```bash
+conda env create -f environment.yml -n myenv
 conda activate myenv
 ```
 
 ---
 
-## 4. Submitting Jobs on HPC
+## ⚡ GPU and CUDA Setup
 
-### CPU-only interactive job
+Check available CUDA modules:
 ```bash
-qsub -I -S /bin/bash -l select=1:ncpus=1:mem=4GB -l walltime=12:00:00
+module avail cuda
 ```
 
-### GPU interactive jobs (examples)
+Load the appropriate version:
 ```bash
-# Request A100
+module load CUDA/12.2.0
+```
+
+Verify GPU availability:
+```bash
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+---
+
+## 📝 Submitting Jobs
+
+### Interactive CPU Job
+```bash
+qsub -I -S /bin/bash -l select=1:ncpus=2:mem=8GB -l walltime=04:00:00
+```
+
+### Interactive GPU Job
+```bash
 qsub -I -S /bin/bash -l select=1:ncpus=4:mem=32g:ngpus=1:gpu_id=A100 -l walltime=12:00:00
-
-# Request H100
-qsub -I -S /bin/bash -l select=1:ncpus=4:mem=32g:ngpus=1:gpu_id=H100 -l walltime=12:00:00
 ```
 
-### Batch job script (example)
+### Batch Job Example
 ```bash
 #!/bin/bash -l
 #PBS -N My_GPU_Job
-#PBS -l select=1:ncpus=4:ngpus=1:mem=32g:gpu_id=A100
-#PBS -l walltime=12:00:00
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32g:gpu_id=H100
+#PBS -l walltime=24:00:00
 
-module load cuda
+module load CUDA/12.2.0
 conda activate myenv
 python myscript.py
 ```
 
----
-
-## 5. Useful HPC Commands
-- `qsub` – submit jobs  
-- `qdel` – cancel jobs  
-- `qstat` – check job status  
-- `qjobs` – list your jobs  
-- `pbsnodes` – check available nodes  
-
----
-
-## 6. Check System Info
-Check hostname:
-```python
-import socket
-print(socket.gethostname())
-```
-
-Check IP address:
-```python
-import socket
-remote_host = "<hostname>"
-print(socket.gethostbyname(remote_host))
-```
-
-Check GPUs:
+Submit with:
 ```bash
-nvidia-smi -L
-```
-
-Check CPUs:
-```bash
-lscpu | grep "^CPU(s):"
+qsub job_script.sh
 ```
 
 ---
 
-# Linux Terminal Commands (Quick Reference)
+## 📊 Monitoring Resources
 
-### Directory Navigation
+Check jobs:
 ```bash
-pwd       # current directory
-ls -l     # list files with details
-cd ..     # go up one level
-cd ~      # home directory
+qstat
+qjobs
 ```
 
-### File Management
+Delete a job:
 ```bash
-mkdir mydir          # create directory
-rm file.txt          # remove file
-rm -rf mydir         # remove folder
-cp file1 file2       # copy file
-mv old new           # move/rename
+qdel <job_id>
 ```
 
-### Viewing Files
+Cluster usage:
 ```bash
-cat file.txt         # full contents
-head -n 5 file.txt   # first 5 lines
-tail -n 5 file.txt   # last 5 lines
-more file.txt        # paginated view
+pbsnodes
+pbsusage
 ```
+
+---
+
+## 💻 Useful Linux Commands
+
+```bash
+pwd         # show current directory
+ls -l       # list files with details
+cd ..       # go up one directory
+mkdir test  # create directory
+rm -rf dir  # remove directory and contents
+cp a b      # copy file
+mv a b      # move/rename file
+cat file    # show file contents
+head -n 10 file  # first 10 lines
+tail -n 10 file  # last 10 lines
+```
+
+---
+
+## 🔗 References & Links
+- [Conda Environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+- [WinFsp](https://github.com/winfsp/winfsp/releases)
+- [SSHFS-Win](https://github.com/winfsp/sshfs-win)
+- [Miniforge](https://github.com/conda-forge/miniforge)
