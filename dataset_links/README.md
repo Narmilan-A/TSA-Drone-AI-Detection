@@ -156,14 +156,17 @@ Contains model predictions and evaluation outputs for **RGB, MS, and HS sensors*
 
 ---
 
-## Citation
+## How to Cite the Dataset
 ```
-@data{TSA-Drone-AI-Detection,
-  url = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
-  author = {Amarasingam, N., & Dehaan, R and collaborators},
-  publisher = {Charles Sturt University / MS Teams Shared Drive},
-  title = {Development of Drone Detection Technology to Enhance Tropical Soda Apple Control in Rugged High-Value Grazing Country in Northern NSW},
-  year = {2025}
+@misc{tsa_dataset_2025,
+  title        = {TSA Drone Imagery and Annotations (RGB, Multispectral, Hyperspectral), Northern NSW, 2023--2025},
+  author       = {Amarasingam, Narmilan and Dehaan, Remy and collaborators},
+  year         = {2025},
+  organization = {Charles Sturt University},
+  howpublished = {MS Teams SharePoint (project shared site)},
+  url          = {https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=FypsMy},
+  note         = {UAV imagery, labels, and metadata for TSA detection}
 }
+
 ```
 
