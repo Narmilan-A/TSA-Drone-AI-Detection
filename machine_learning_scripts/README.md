@@ -6,8 +6,6 @@ This repository contains end‑to‑end pipelines for remote‑sensing segmentat
 
 ### `machine_learning_scripts`
 
-#### Scripts:
-
 ```text
 machine_learning_scripts/
 ├── hs/
