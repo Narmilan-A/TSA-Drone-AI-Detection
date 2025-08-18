@@ -73,8 +73,8 @@ source ~/.bashrc
 
 ### Step 3 – Create and Activate Environment
 ```bash
-conda create -n myenv python=3.10 -y
-conda activate myenv
+conda create -n tsa_env python=3.10 -y
+conda activate tsa_env
 ```
 
 ### Step 4 – Install Libraries
