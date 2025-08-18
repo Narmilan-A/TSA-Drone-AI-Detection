@@ -30,12 +30,14 @@ TSA-DRONE-AI-DETECTION/
 │   ├── Using_QGIS_for_Annotation.md
 │
 ├── machine_learning_scripts/
+│   ├── README.md              # Docs overview
 │   ├── hs/                    # Hyperspectral model scripts
 │   ├── ms/                    # Multispectral model scripts
 │   ├── rgb/                   # RGB model scripts
 │   └── other/                 # Utility scripts for raster/vector operations
 │
 ├── model_performance/         # Model results, metrics, plots
+│   ├── README.md              # Docs overview
 │
 ├── dataset Links/
 │   └── README.md              # Example dataset for quick tests
