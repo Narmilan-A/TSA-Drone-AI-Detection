@@ -26,20 +26,7 @@ This README describes **what each file/folder contains** in your *model performa
 
 ---
 
-## 1) Top-level layout
-
-- `hs/` – Hyperspectral U-Net runs and predictions  
-- `ms/` – Multispectral experiments  
-  - `altum/` – U-Net run + an **XGBoost** baseline (`xgb_altum_model&outcomes_1/`)  
-  - `m3m-ms/` – U-Net run (train/val + test artifacts)  
-  - `rededge-p/` – U-Net run + an **XGBoost** baseline (`xgb_rededge-p_model&outcomes_1/`)  
-- `rgb/fuji/` – RGB U-Net run (train/val + test artifacts)  
-
-> The structure is consistent: each dataset has a U-Net run (images, CSV, text reports) and some datasets also have classical ML baselines (XGBoost) for comparison.
-
----
-
-## 2) Common U‑Net artifacts (appear in most model folders)
+## Common U‑Net artifacts (appear in most model folders)
 
 - **`unet_save_best_model.keras` / `unet_best_model.keras`**  
   The best checkpoint saved in the Keras v3 format. Use `keras.models.load_model(...)` to load for inference.
@@ -64,41 +51,7 @@ This README describes **what each file/folder contains** in your *model performa
 
 ---
 
-## 3) Hyperspectral (**hs**) extras
-
-- **Testing artifacts** (`hs/hs_test_results/`)  
-  - `unet_cm_heatmap_testing.png` — Confusion matrix on the **held‑out test** tiles.  
-  - `unet_model_testing_performance_report.txt` — Classification report for test tiles.  
-  - `unet_testing_samples.txt` — Summary (counts/shapes) of the test dataset.
-
-- **Predictions export** (`hs/hs_unet_predictions/`)  
-  - `tif/` — GeoTIFF rasters of model predictions per ROI/tile (`*_pred.tif`).  
-  - `envi/` — ENVI pair (`.hdr` + `.dat`) for the same predictions.  
-  These are per‑tile probability/logit/label rasters (depending on the exporter used). They’re ready for GIS inspection (QGIS/ENVI).
-
----
-
-## 4) Multispectral (**ms**) notes
-
-- **`altum/` and `rededge-p/`** include **XGBoost** baselines:  
-  - `best_xgb_model.pkl` — Serialized XGB model (load with `pickle` or `joblib`).  
-  - `xgb_cr&cm_validation.txt`, `xgb_cm_heatmap_validation.png` — Validation metrics.  
-  - `xgb_cr&cm_testing.txt`, `xgb_cm_heatmap_testing.png` — Held‑out test metrics.
-
-- **`m3m-ms/`** follows the standard U‑Net pattern and includes **training** (`…training_&_validation_performance_report.txt`) and **testing** (`unet_model_testing_performance_report.txt`) reports plus confusion matrices for both.
-
-> Use these baselines to cross‑check if the deep model is over/under‑performing a simple learner on the same features.
-
----
-
-## 5) RGB (**rgb/fuji**) notes
-
-- Contains both **train/validation** and **test** reports/plots like the MS runs.  
-- Also includes a `unet_prediction_rois/` folder with per‑ROI/tile predictions exported to **.tif** and **ENVI** formats for GIS evaluation.
-
----
-
-## 6) How to read & compare runs
+## How to read & compare runs
 
 1. **Start with the PNGs** (`Accuracy.png`, `Loss.png`) to spot over/under‑fitting.  
 2. **Open the confusion matrix** for val/test to see dominant error types.  
