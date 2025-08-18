@@ -7,7 +7,7 @@ This dataset contains drone-acquired imagery and annotations for **Tropical Soda
 
 ---
 
-### How to Access (CSU staff/students)
+### How to Access (CSU staff/students/others)
 
 1. **Sign in with CSU credentials**
    - When prompted, choose **Work or school account** and complete MFA if asked.
