@@ -18,8 +18,3 @@ This project can be run in three typical environments. Below is a quick intro to
 - **Notes:** Ensure GDAL is installed consistently with Python. CPU is fine for tests; for GPU, match TensorFlow/CUDA versions carefully. Use the same folder layout as on HPC for drop‑in script compatibility.
 
 ---
-
-### General tips
-- Scripts pair image/mask files using the `roi_<n>_tile_<m>` key (masks may have a `mask_` prefix).
-- Models save as `.keras`; weights-only checkpoints use `.weights.h5`.
-- Keep the directory structure and band-selection files consistent when switching environments.
