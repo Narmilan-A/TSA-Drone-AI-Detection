@@ -3,7 +3,7 @@
 This README summarises where to find evaluation outputs (reports, plots, and predictions) produced by the HS/MS/RGB training runs.
 
 ## OneDrive Access (add your link)
-**Primary OneDrive folder**: [Open in OneDrive](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=tYbznU)
+**Primary OneDrive folder**: [SharePoint/Teams Link](https://csuprod.sharepoint.com/:f:/r/sites/RSRCH-WeedDataShared/Shared%20Documents/General/TSA-Drone-AI-Detection?csf=1&web=1&e=tYbznU)
 
 ---
 
