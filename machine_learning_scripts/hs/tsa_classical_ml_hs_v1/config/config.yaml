@@ -1,0 +1,91 @@
+# ==============================
+# Global configuration for TSA Drone AI Detection
+# Unlabeled=0, TSA=1, Background=2 in masks
+# ==============================
+
+data:
+  train_image_folder: "F:/tsa_model_training/sensors_for_modelling/hs/afx/hs_rois/training"
+  train_mask_folder:  "F:/tsa_model_training/sensors_for_modelling/hs/afx/pixel_mask_rois/training"
+  test_image_folder:  "F:/tsa_model_training/sensors_for_modelling/hs/afx/hs_rois/testing"
+  test_mask_folder:   "F:/tsa_model_training/sensors_for_modelling/hs/afx/pixel_mask_rois/testing"
+  predict_image_folder: "F:/tsa_model_training/sensors_for_modelling/hs/afx/hs_rois/testing"
+  output_folder: "Training_model_outcomes"
+
+processing:
+  class_pairs: [[1, 2]]
+  top_items_count_bands: 50   # pre-filter bands before model training
+  normalize: true
+  random_seed: 42
+
+# Set this to one model at a time: "RandomForest", "XGBoost", "SVM", or "KNN"
+model_type: "SVM" # "RandomForest" or "XGBoost" or ""SVM" or "KNN"
+
+# Feature-importance retraining settings (applies ONLY when model_type is RF or XGB)
+feature_selection:
+  enabled: true
+  top_k_features: 10           # number of most important features to keep
+  output_subfolder: "feature_selection"
+  save_plots: true
+  save_csv: true
+
+RandomForest:
+  training:
+    n_estimators: 200
+    max_depth: 20
+    min_samples_split: 2
+    min_samples_leaf: 1
+    bootstrap: true
+    class_weight: "balanced"
+    test_size: 0.25
+  testing:
+    report: true
+    confusion_matrix: true
+  prediction:
+    save_geotiff: true
+    save_envi: true
+
+XGBoost:
+  training:
+    n_estimators: 300
+    learning_rate: 0.01
+    max_depth: 8
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    reg_alpha: 0.0
+    test_size: 0.25
+  testing:
+    report: true
+    confusion_matrix: true
+  prediction:
+    save_geotiff: true
+    save_envi: true
+
+SVM:
+  training:
+    kernel: "rbf"
+    C: 10.0
+    gamma: "scale"
+    probability: false
+    test_size: 0.25
+  testing:
+    report: true
+    confusion_matrix: true
+  prediction:
+    save_geotiff: true
+    save_envi: true
+
+KNN:
+  training:
+    n_neighbors: 7
+    weights: "distance"
+    algorithm: "auto"
+    leaf_size: 30
+    p: 2
+    test_size: 0.25
+  testing:
+    report: true
+    confusion_matrix: true
+  prediction:
+    save_geotiff: true
+    save_envi: true
